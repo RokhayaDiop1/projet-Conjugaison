@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accueil - Conjugaison</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <!-- à placer dans le <head> de ta page HTML -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+
+      <!-- AOS: Animate On Scroll Library -->
+    <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
+
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Serif:ital,opsz,wght@0,8..144,100..900;1,8..144,100..900&display=swap" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/e174f5c1a1.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+
+ 
+
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="logo">  
+            <img src="/static/images/logo.png" alt="">
+        </div>
+        <div style="padding: 90px;">
+            <i class="fa-solid fa-house"></i>
+            <a href="{{ url_for('accueil') }}">Accueil</a>
+            <a href="{{ url_for('connexion') }}">Connexion</a>
+        </div>
+    </nav>
+
+<div class="container">
+ <h1 style="margin-bottom: 10px;">Bienvenue sur ConjuChat</h1>
+    <p style="font-size: 16px; max-width: 600px; margin: 0 auto 30px;">
+        Apprenez à conjuguer facilement les verbes français à tous les temps grâce à nos outils interactifs et intuitifs.
+    </p>
+
+    <div class="row">
+  <a href="{{ url_for('apprentissage') }}" class="column apprentissage">
+    <div class="icon-circle">
+      <i class="fas fa-book-open"></i>
+    </div>
+    Apprentissage
+  </a>
+
+  <a href="{{ url_for('conjugaison') }}" class="column conjugaison">
+    <div class="icon-circle">
+      <i class="fas fa-pen-fancy"></i>
+    </div>
+    Conjugaison
+  </a>
+
+  <a href="{{ url_for('chatbot') }}" class="column jeux">
+    <div class="icon-circle">
+      <img src="/static/images/chat-icon.png" alt="Icône Chatbot" width="12 0">
+    </div>
+    Chatbot
+  </a>
+</div>
+
+</div>
+<section class="features">
+  <h2 class="section-title">Pourquoi utiliser notre application ?</h2>
+
+  <div class="features-container">
+    <div class="feature" data-aos="fade-up" data-aos-delay="100">
+      <div class="icon-circle"><i class="fas fa-book"></i></div>
+      <div class="feature-text">
+        <h3>Des milliers de verbes</h3>
+        <p>
+        Découvrez une fiche d’identité complète pour chaque verbe :
+        Accédez à toutes les informations essentielles sur le verbe de votre choix.
+        Chaque fiche vous présente sa conjugaison détaillée, à tous les temps.
+        Clair, structuré et accessible, cet outil vous permet de maîtriser la conjugaison en un clin d’œil,
+        que vous soyez étudiant, enseignant ou simplement curieux.
+      </p>
+      </div>
+    </div>
+
+    <div class="feature card-style reverse">
+      <div class="feature-text">
+        <h3>Une recherche intelligente</h3>
+        <ul>
+          <li>Recherchez un verbe même avec une faute de frappe</li>
+          <li>Ou en tapant seulement les premières lettres</li>
+          <li>Ou sous une forme conjuguée</li>
+        </ul>
+      </div>
+      <div class="icon-circle"><i class="fas fa-search"></i></div>
+    </div>
+
+    <div class="feature card-style">
+      <div class="icon-circle"><i class="fas fa-check-circle"></i></div>
+      <div class="feature-text">
+        <h3>Des résultats rapides</h3>
+        <p>Obtenez instantanément la conjugaison complète. Que ce soit un verbe régulier ou irrégulier.
+           Idéal pour réviser, apprendre ou simplement vérifier un doute.</p>
+      </div>
+    </div>
+  
+
+
+  <div class="feature" data-aos="fade-up" data-aos-delay="100">
+    <div class="icon-circle">
+      <img src="/static/images/chat-icon.png" alt="Icône Chatbot" width="100">
+    </div>
+    <div class="feature-text">
+      <h3>Un assistant à votre écoute</h3>
+      <p>
+        Grâce au chatbot intégré, posez vos questions en temps réel :
+        Obtenez des explications claires, des conseils personnalisés ou une aide instantanée pour naviguer sur la plateforme.
+      </p>
+    </div>
+  </div>
+
+</div>
+</section>
+
+
+  <!-- Section des verbes -->
+<section class="verbes-populaires">
+  <div class="dessin"></div>
+  <div class="container-verbes">
+    <h2>Les verbes les plus conjugués</h2>
+    <div class="verbe-nuage">
+      <a href="#" class="grosse">devoir</a>
+      <a href="#" class="moyenne">aimer</a>
+      <a href="#" class="moyenne">appeler</a>
+      <a href="#" class="grande">aller</a>
+      <a href="#" class="grosse">pouvoir</a>
+      <a href="#" class="grande">prendre</a>
+      <a href="#" class="moyenne">mettre</a>
+      <a href="#" class="grande">faire</a>
+      <a href="#" class="petite">joindre</a>
+      <a href="#" class="grosse">envoyer</a>
+      <a href="#" class="moyenne">permettre</a>
+      <a href="#" class="grosse">voir</a>
+      <a href="#" class="moyenne">attendre</a>
+      <a href="#" class="moyenne">dire</a>
+      <a href="#" class="grande">venir</a>
+      <a href="#" class="xgrande">avoir</a>
+      <a href="#" class="petite">savoir</a>
+      <a href="#" class="petite">partir</a>
+      <a href="#" class="grande">vouloir</a>
+      <a href="#" class="petite">être</a>
+    </div>
+  </div>
+</section>
+
+
+
+
+<footer class="footer">
+  <div class="footer-container">
+    <p>&copy; ConjuChat. Tous droits réservés.</p>
+    <div class="footer-links">
+      <a href="#">À propos</a>
+      <a href="#">Contact</a>
+      <a href="#">Mentions légales</a>
+    </div>
+  </div>
+</footer>
+
+
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+<script>
+  AOS.init({
+    duration: 1000, // durée de l'animation (en ms)
+    once: true      // n’anime qu’une seule fois lors du scroll
+  });
+</script>
+
+</body>
+</html>

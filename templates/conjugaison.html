@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Conjugaison - Mon Application</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <header>
+        <h1>Conjugaison</h1>
+        <nav>
+            <ul>
+                <li><a href="{{ url_for('accueil') }}">Accueil</a></li>
+                <li><a href="{{ url_for('connexion') }}">Connexion</a></li>
+                <li><a href="{{ url_for('apprentissage') }}">Apprentissage</a></li>
+                <li><a href="{{ url_for('conjugaison') }}">Conjugaison</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="conjugaison-section">
+            <h2>Entrez un verbe à conjuguer :</h2>
+            <form action="#" method="post">
+                <input type="text" name="verbe" placeholder="Ex : aller, être, finir..." required>
+                <button type="submit">Conjuguer</button>
+            </form>
+
+            <div class="resultat-conjugaison">
+                <!-- Résultats de conjugaison s'afficheront ici -->
+                <p>Résultat de la conjugaison à venir...</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Mon Application de Langue. Tous droits réservés.</p>
+    </footer>
+</body>
+</html>
