@@ -53,12 +53,13 @@
     Conjugaison
   </a>
 
-  <a href="{{ url_for('chatbot') }}" class="column jeux">
-    <div class="icon-circle">
-      <img src="/static/images/chat-icon.png" alt="Icône Chatbot" width="12 0">
-    </div>
-    Chatbot
-  </a>
+ <a href="{{ url_for('exercices') }}" class="column exercices">
+  <div class="icon-circle">
+    <i class="fas fa-pencil-alt"></i>
+  </div>
+  Exercices
+</a>
+
 </div>
 
 </div>
@@ -120,35 +121,36 @@
 </section>
 
 
-  <!-- Section des verbes -->
+<!-- Section des verbes -->
 <section class="verbes-populaires">
   <div class="dessin"></div>
   <div class="container-verbes">
     <h2>Les verbes les plus conjugués</h2>
     <div class="verbe-nuage">
-      <a href="#" class="grosse">devoir</a>
-      <a href="#" class="moyenne">aimer</a>
-      <a href="#" class="moyenne">appeler</a>
-      <a href="#" class="grande">aller</a>
-      <a href="#" class="grosse">pouvoir</a>
-      <a href="#" class="grande">prendre</a>
-      <a href="#" class="moyenne">mettre</a>
-      <a href="#" class="grande">faire</a>
-      <a href="#" class="petite">joindre</a>
-      <a href="#" class="grosse">envoyer</a>
-      <a href="#" class="moyenne">permettre</a>
-      <a href="#" class="grosse">voir</a>
-      <a href="#" class="moyenne">attendre</a>
-      <a href="#" class="moyenne">dire</a>
-      <a href="#" class="grande">venir</a>
-      <a href="#" class="xgrande">avoir</a>
-      <a href="#" class="petite">savoir</a>
-      <a href="#" class="petite">partir</a>
-      <a href="#" class="grande">vouloir</a>
-      <a href="#" class="petite">être</a>
+      <a href="{{ url_for('conjugaison', verbe='devoir') }}" class="grosse">devoir</a>
+      <a href="{{ url_for('conjugaison', verbe='aimer') }}" class="moyenne">aimer</a>
+      <a href="{{ url_for('conjugaison', verbe='appeler') }}" class="moyenne">appeler</a>
+      <a href="{{ url_for('conjugaison', verbe='aller') }}" class="grande">aller</a>
+      <a href="{{ url_for('conjugaison', verbe='pouvoir') }}" class="grosse">pouvoir</a>
+      <a href="{{ url_for('conjugaison', verbe='prendre') }}" class="grande">prendre</a>
+      <a href="{{ url_for('conjugaison', verbe='mettre') }}" class="moyenne">mettre</a>
+      <a href="{{ url_for('conjugaison', verbe='faire') }}" class="grande">faire</a>
+      <a href="{{ url_for('conjugaison', verbe='joindre') }}" class="petite">joindre</a>
+      <a href="{{ url_for('conjugaison', verbe='envoyer') }}" class="grosse">envoyer</a>
+      <a href="{{ url_for('conjugaison', verbe='permettre') }}" class="moyenne">permettre</a>
+      <a href="{{ url_for('conjugaison', verbe='voir') }}" class="grosse">voir</a>
+      <a href="{{ url_for('conjugaison', verbe='attendre') }}" class="moyenne">attendre</a>
+      <a href="{{ url_for('conjugaison', verbe='dire') }}" class="moyenne">dire</a>
+      <a href="{{ url_for('conjugaison', verbe='venir') }}" class="grande">venir</a>
+      <a href="{{ url_for('conjugaison', verbe='avoir') }}" class="xgrande">avoir</a>
+      <a href="{{ url_for('conjugaison', verbe='savoir') }}" class="petite">savoir</a>
+      <a href="{{ url_for('conjugaison', verbe='partir') }}" class="petite">partir</a>
+      <a href="{{ url_for('conjugaison', verbe='vouloir') }}" class="grande">vouloir</a>
+      <a href="{{ url_for('conjugaison', verbe='être') }}" class="petite">être</a>
     </div>
   </div>
 </section>
+
 
 
 
@@ -170,9 +172,11 @@
 
 <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
 <script>
-  AOS.init({
-    duration: 1000, // durée de l'animation (en ms)
-    once: true      // n’anime qu’une seule fois lors du scroll
+  document.addEventListener('DOMContentLoaded', function () {
+    AOS.init({
+      duration: 1000,
+      once: true
+    });
   });
 </script>
 

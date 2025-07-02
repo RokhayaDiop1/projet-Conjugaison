@@ -1,40 +1,319 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <title>Conjugaison - Mon Application</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  <meta charset="UTF-8">
+  <title>Conjugueur de verbes</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <style>
+
+    @keyframes fadeInUp {
+    0% {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes logoFadeRotate {
+    0% {
+        opacity: 0;
+        transform: rotate(-20deg) scale(0.8);
+    }
+    100% {
+        opacity: 1;
+        transform: rotate(0deg) scale(1);
+    }
+}
+
+@keyframes backgroundZoom {
+    0% {
+        background-size: 100% auto;
+    }
+    50% {
+        background-size: 105% auto;
+    }
+    100% {
+        background-size: 100% auto;
+    }
+}
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-image: url("/static/images/v882batch2-kul-12.jpg");
+      background-size: 100% auto;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      color: #fff;
+      text-align: center;
+      animation: backgroundZoom 20s ease-in-out infinite;
+      margin: 0;
+      padding: 0;
+    }
+
+    .main-container {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .results {
+      flex: 2;
+      padding: 50px;
+      overflow-y: auto;
+    }
+
+    .form-sidebar {
+      flex: 1;
+      background-color: #9c3447;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px;
+      position: sticky;
+      top: 220px;
+      right: 30px;
+      height: 250px;
+      border-radius: 300px;
+    }
+
+    .form-sidebar h2 {
+      margin-bottom: 30px;
+    }
+
+    .form-sidebar form {
+      width: 100%;
+    }
+
+    .form-sidebar input[type="text"] {
+      width: 80%;
+      padding: 15px;
+      border: none;
+      border-radius: 12px;
+      margin: 0 auto 15px auto;
+      display: block;
+      font-size: 16px;
+      text-align: center;
+    }
+
+    .form-sidebar button {
+      width: 200px;
+      height: 50px;
+      background-color: transparent;
+      color: #ffffff;
+      border: 2px solid white;
+      font-weight: bold;
+      border-radius: 50px;
+      cursor: pointer;
+      font-size: 16px;
+      margin: 20px auto 0 auto;
+      display: block;
+    }
+    .form-sidebar button:hover {
+      background-color: #f5bbbb;
+      color: #9c3447;
+    }
+
+    .info-grammaire {
+  background-color: #fceeee;
+  color: #500;
+  padding: 15px;
+  border-radius: 10px;
+  border: 1px solid;
+  width: fit-content;
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+    .fiche-identite div {
+      background-color: #f5bbbb;
+      padding: 10px 20px;
+      border-radius: 20px;
+      text-align: left;
+    }
+
+
+    .resultats-conjugaison {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  margin-top: 40px;
+}
+
+.bloc-mode {
+  background-color: transparent;
+  border-radius: 16px;
+  padding: 30px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  border-left: 6px solid #9c3447;
+}
+
+.titre-mode {
+  color: #9c3447;
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #eee;
+  padding-bottom: 8px;
+}
+
+.bloc-temps {
+  margin-bottom: 25px;
+}
+
+.titre-temps {
+  color: #444;
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  background-color: transparent;
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 8px;
+  color: #9c3447;
+}
+
+.table-conjugaison {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: transparent;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+.table-conjugaison td {
+  padding: 10px 15px;
+  border-bottom: 1px solid #eee;
+  text-align: left;
+  color: #333;
+  font-size: 18px;
+  text-align: center;
+}
+
+.table-conjugaison tr:last-child td {
+  border-bottom: none;
+}
+
+.ligne-temps {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.ligne-paire {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.bloc-temps {
+  flex: 1;
+  min-width: 300px;
+  background-color: transparent;
+  border-radius: 12px;
+  padding: 15px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.titre-temps {
+  background-color:#f5bbbb;
+  color: #9c3447;
+  padding: 6px 10px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  font-size: 20px;
+  display: inline-block;
+}
+
+
+
+  </style>
 </head>
 <body>
-    <header>
-        <h1>Conjugaison</h1>
-        <nav>
-            <ul>
-                <li><a href="{{ url_for('accueil') }}">Accueil</a></li>
-                <li><a href="{{ url_for('connexion') }}">Connexion</a></li>
-                <li><a href="{{ url_for('apprentissage') }}">Apprentissage</a></li>
-                <li><a href="{{ url_for('conjugaison') }}">Conjugaison</a></li>
-            </ul>
-        </nav>
-    </header>
+<div class="main-container">
+  <div class="results">
+    <div class="header-top" style="text-align: center; display: flex; flex-direction: column; align-items: center; margin-bottom: 0px;">
+      <a href="{{ url_for('accueil') }}" style="text-decoration: none;">
+        <img src="/static/images/logo1 copie.png" alt="" width="300px" style="height: 150px;">
+      </a>
+    </div>
+    
 
-    <main>
-        <section class="conjugaison-section">
-            <h2>Entrez un verbe à conjuguer :</h2>
-            <form action="#" method="post">
-                <input type="text" name="verbe" placeholder="Ex : aller, être, finir..." required>
-                <button type="submit">Conjuguer</button>
-            </form>
+    {% if conjugaisons %}
+      <h2 style="font-size: 30px; color: #000;">Conjugaison du verbe <span style="color: #9c3447;">{{ verbe }}</span></h2>
 
-            <div class="resultat-conjugaison">
-                <!-- Résultats de conjugaison s'afficheront ici -->
-                <p>Résultat de la conjugaison à venir...</p>
-            </div>
-        </section>
-    </main>
+      <!-- 🔎 Fiche identité du verbe -->
+    
+      <div class="info-grammaire">
+        <p><strong>Groupe :</strong> {{ groupe }}</p>
+        <p><strong>Verbe pronominal :</strong> {{ pronominal }}</p>
+      </div>
 
-    <footer>
-        <p>&copy; 2025 Mon Application de Langue. Tous droits réservés.</p>
-    </footer>
+
+
+
+     <div class="resultats-conjugaison">
+      {% for mode, temps in conjugaisons.items() %}
+        <div class="bloc-mode {{ mode|lower }}">
+          <h3 class="titre-mode">{{ mode|capitalize }}</h3>
+          <div class="ligne-temps">
+            {% for nom_temps, formes in temps.items() %}
+              {% if loop.index0 is divisibleby 2 %}
+                <div class="ligne-paire">
+              {% endif %}
+              
+              <div class="bloc-temps">
+                <h4 class="titre-temps">{{ nom_temps|capitalize }}</h4>
+                <table class="table-conjugaison">
+                  <tbody>
+                    {% for forme in formes %}
+                      <tr><td>{{ forme }}</td></tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+              
+              {% if loop.index0 is divisibleby 2 and loop.length == loop.index %}
+                </div>
+              {% elif loop.index0 is odd %}
+                </div>
+              {% endif %}
+            {% endfor %}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+
+    {% elif verbe %}
+      <p style="color: red;">Aucune conjugaison trouvée pour "<strong>{{ verbe }}</strong>"</p>
+    {% else %}
+      <div style="text-align: center; margin-top: 30px;">
+        <div class="intro-text">
+          <h1 style="margin: 0; color: black;">Conjuguez n’importe quel verbe français</h1>
+        </div>
+        <br><br><br>
+        <div class="verbes-populaires" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 12px;">
+          {% for v in ['être', 'avoir', 'aller', 'faire', 'dire', 'venir', 'voir', 'pouvoir', 'parler', 'finir', 'prendre', 'savoir', 'vouloir', 'mettre', 'tenir', 'sortir', 'vivre', 'écrire', 'lire', 'partir', 'boire', 'croire', 'devoir', 'ouvrir', 'recevoir', 'suivre', 'courir'] %}
+            <a href="{{ url_for('conjugaison') }}?verbe={{ v }}"
+               style="background-color: #9c3447; color: white; padding: 8px 16px; border-radius: 20px; text-decoration: none; font-size: 15px; transition: background 0.3s;">
+              {{ v }}
+            </a>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+  </div>
+
+  <div class="form-sidebar">
+    <h2>Conjuguer un verbe</h2>
+    <form method="POST">
+      <input type="text" name="verbe" placeholder="Entrez un verbe..." required>
+      <button type="submit">CONJUGUER</button>
+    </form>
+  </div>
+</div>
 </body>
 </html>
