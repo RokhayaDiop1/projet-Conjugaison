@@ -2,13 +2,10 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Connexion</title>
+  <title>Inscription</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
   <style>
-
-
-    @keyframes fadeInUp {
+     @keyframes fadeInUp {
     0% {
         opacity: 0;
         transform: translateY(30px);
@@ -41,11 +38,7 @@
         background-size: 100% auto;
     }
 }
-
-
-
     
-
     body {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
@@ -64,27 +57,23 @@
     }
 
     .form-container {
-  background-color: transparent;
-  border: 2px solid #9c3447;
-  padding: 40px 50px;
-  border-radius: 15px;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
-  max-width: 450px;
-  width: 100%;
-  text-align: center;
-  height: 450px;
-}
-
-
-    h2 {
+      background-color: transparent;
+      border: 2px solid #9c3447;
+      padding: 40px 50px;
+      border-radius: 15px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+      max-width: 450px;
+      width: 100%;
       text-align: center;
-      margin-bottom: 20px;
-      color: #9c3447;
     }
 
-    input[type="email"],
-    input[type="password"] {
-     width: 100%;
+    .form-container h2 {
+      color: #9c3447;
+      margin-bottom: 25px;
+    }
+
+    .form-container input {
+      width: 100%;
       padding: 12px 15px;
       margin: 10px 0;
       border: 1px solid #ccc;
@@ -92,50 +81,42 @@
       font-size: 15px;
     }
 
-    button {
-      width: 100%;
-      padding: 12px;
-      background-color: transparent;
-      color: #9c3447;;
-      border: none;
-      border-radius: 6px;
-      font-weight: bold;
-      cursor: pointer;
-      border: 1px solid #9c3447;
-    }
-
-    button:hover {
-      background-color: #7a2a37;
+    .form-container button {
+      background-color: #9c3447;
       color: white;
-    }
-
-    .messages {
-      color: red;
-      text-align: center;
-      margin-bottom: 10px;
-    }
-
-    p {
-      text-align: center;
+      border: none;
+      padding: 12px 20px;
+      font-size: 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
       margin-top: 15px;
+      width: 100%;
     }
 
-    a {
+    .form-container button:hover {
+      background-color: #7a2a39;
+    }
+
+    .icon-register {
+      font-size: 60px;
       color: #9c3447;
-      text-decoration: none;
+      margin-bottom: 15px;
     }
 
-    a:hover {
-      text-decoration: underline;
+    ul {
+      list-style: none;
+      padding: 0;
+      color: red;
+      margin-bottom: 15px;
     }
 
-    .icon-login {
-  font-size: 70px;
-  color: #9c3447;
-  margin-bottom: 20px;
-}
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
 
-.retour-accueil {
+    .retour-accueil {
       margin-top: 20px;
     }
 
@@ -149,40 +130,45 @@
       text-decoration: underline;
     }
 
-    
-    
+    @keyframes bounce {
+      0%, 100% {
+        transform: translateY(0);
+      }
+      50% {
+        transform: translateY(-5px);
+      }
+    }
+
   </style>
 </head>
 <body>
 
-     <div class="form-container">
-    
-        <div class="icon-login">
-            <i class="fas fa-user-circle"></i>
-        </div>
+  <div class="form-container">
+    <div class="icon-register">
+      <i class="fas fa-user-plus"></i>
+    </div>
 
-    <h2>Connexion</h2>
-    
+    <h2>Créer un compte</h2>
 
     {% with messages = get_flashed_messages() %}
       {% if messages %}
-        <div class="messages">
+        <ul>
           {% for message in messages %}
-            <p>{{ message }}</p>
+            <li>{{ message }}</li>
           {% endfor %}
-        </div>
+        </ul>
       {% endif %}
     {% endwith %}
 
     <form method="POST">
+      <input type="text" name="nom" placeholder="Nom" required><br>
+      <input type="text" name="prenom" placeholder="Prénom" required><br>
       <input type="email" name="email" placeholder="Email" required><br>
-      <input type="password" name="mot_de_passe" placeholder="Mot de passe" required><br><br>
-      <button type="submit">Se connecter</button><br>
-    </form><br>
-
-    <p>Pas encore de compte ? <a href="{{ url_for('inscription') }}">S'inscrire</a></p>
+      <input type="password" name="mot_de_passe" placeholder="Mot de passe" required><br>
+      <button type="submit">S'inscrire</button>
+    </form>
     <div class="retour-accueil">
-      <a href="{{ url_for('accueil') }}"><i class="fas fa-arrow-left"></i>Accueil</a>
+      <a href="{{ url_for('connexion') }}"><i class="fas fa-arrow-left"></i> connexion</a>
     </div>
   </div>
 

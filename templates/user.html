@@ -1,0 +1,4 @@
+<h1>Bienvenue {{ utilisateur.prenom }} {{ utilisateur.nom }}</h1>
+<p>Email : {{ utilisateur.email }}</p>
+<p>Rôle : {{ utilisateur.role }}</p>
+<a href="{{ url_for('deconnexion') }}">Se déconnecter</a>

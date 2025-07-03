@@ -248,7 +248,7 @@
       <!-- 🔎 Fiche identité du verbe -->
     
       <div class="info-grammaire">
-        <p><strong>Groupe :</strong> {{ groupe }}</p>
+        <p><strong>Groupe :</strong> Verbe du {{ groupe }}</p>
         <p><strong>Verbe pronominal :</strong> {{ pronominal }}</p>
       </div>
 
@@ -270,8 +270,17 @@
                 <table class="table-conjugaison">
                   <tbody>
                     {% for forme in formes %}
-                      <tr><td>{{ forme }}</td></tr>
+                      <tr>
+                        <td>
+                          {{ forme
+                            | replace("il s'", "il/elle s'")
+                            | replace("il ", "il/elle ")
+                            | replace("ils s'", "ils/elles s'")
+                            | replace("ils ", "ils/elles ") }}
+                        </td>
+                      </tr>
                     {% endfor %}
+
                   </tbody>
                 </table>
               </div>
