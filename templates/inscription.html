@@ -56,6 +56,18 @@
         animation: backgroundZoom 20s ease-in-out infinite;
     }
 
+
+    .logo-header {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+    }
+
+    .logo-header img {
+      height: 100px;
+    }
+
+
     .form-container {
       background-color: transparent;
       border: 2px solid #9c3447;
@@ -142,6 +154,12 @@
   </style>
 </head>
 <body>
+
+  <div class="logo-header">
+      <a href="{{ url_for('accueil') }}">
+        <img src="/static/images/logo1 copie.png" alt="Logo">
+      </a>
+    </div>
 
   <div class="form-container">
     <div class="icon-register">

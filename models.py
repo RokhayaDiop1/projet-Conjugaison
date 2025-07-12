@@ -1,5 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
-
+from datetime import datetime
 db = SQLAlchemy()
 
 class Mode(db.Model):
@@ -29,3 +29,30 @@ class Utilisateur(db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     mot_de_passe = db.Column(db.String(255), nullable=False)
     role = db.Column(db.String(20), default='user')
+
+
+
+    
+
+class Historique(db.Model):
+    __tablename__ = 'historiques'
+
+    id = db.Column(db.Integer, primary_key=True)
+    utilisateur_id = db.Column(db.Integer, db.ForeignKey('utilisateur.id'), nullable=True)
+    conjugaison_id = db.Column(db.Integer, db.ForeignKey('conjugaison.id'), nullable=False)
+    date_consultation = db.Column(db.DateTime, default=datetime.utcnow)
+
+    utilisateur = db.relationship('Utilisateur', backref='historiques')
+    conjugaison = db.relationship('Conjugaison', backref='historiques')
+
+
+
+class Cours(db.Model):
+    __tablename__ = 'cours'
+
+    id = db.Column(db.Integer, primary_key=True)
+    titre = db.Column(db.String(255), nullable=False)
+    contenu = db.Column(db.Text, nullable=False)  
+
+    def __repr__(self):
+        return f"<Cours {self.titre}>"

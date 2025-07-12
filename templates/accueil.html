@@ -25,10 +25,15 @@
         <div class="logo">  
             <img src="/static/images/logo.png" alt="">
         </div>
-        <div style="padding: 90px;">
-            <i class="fa-solid fa-house"></i>
-            <a href="{{ url_for('accueil') }}">Accueil</a>
-            <a href="{{ url_for('connexion') }}">Connexion</a>
+        <div>
+          <i class="fa-solid fa-house"></i>
+          <a href="{{ url_for('accueil') }}">Accueil</a>
+  
+          {% if session.get('utilisateur_id') %}
+              <a href="{{ url_for('deconnexion') }}">Déconnexion</a>
+          {% else %}
+              <a href="{{ url_for('connexion') }}">Connexion</a>
+          {% endif %}
         </div>
     </nav>
 
@@ -53,12 +58,12 @@
     Conjugaison
   </a>
 
- <a href="{{ url_for('exercices') }}" class="column exercices">
-  <div class="icon-circle">
-    <i class="fas fa-pencil-alt"></i>
-  </div>
-  Exercices
-</a>
+ <a href="{{ url_for('chatbot') }}" class="column jeux">
+    <div class="icon-circle">
+      <img src="/static/images/chat-icon.png" alt="Icône Chatbot" width="30">
+    </div>
+    Chatbot
+  </a>
 
 </div>
 

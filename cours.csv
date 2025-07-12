@@ -1,0 +1,261 @@
+titre,contenu
+"Généralités de la conjugaison","<h2>Généralités sur la conjugaison</h2>
+<h3>Les Modes et les Temps De La Conjugaison</h3>
+<h4>1- Les Modes</h4>
+<p>Dans la conjugaison française, on distingue les <strong>modes personnels</strong> (indicatif, subjonctif, impératif, conditionnel), ils expriment des actions ou des états liés à un sujet précis, et les <strong>modes impersonnels</strong> (infinitif, participe) qui sont utilisés généralement pour exprimer une action de façon neutre, sans indiquer qui fait l'action.</p>
+<p><strong>Exemples :</strong></p>
+<ul>
+  <li>Personnels : je mange, que tu ailles, tu voudrais, finis</li>
+  <li>Impersonnels : parler, finir, en prenant</li>
+</ul>
+
+<h4>2- Les Temps</h4>
+<p>En conjugaison, le temps exprime le déroulement d'une action durant une période. Il se divise en trois phases principales :</p>
+<ul>
+  <li><strong>Le passé</strong> (ce qui est déjà arrivé)</li>
+  <li><strong>Le présent</strong> (ce qui se passe maintenant)</li>
+  <li><strong>Le futur</strong> (ce qui n'est pas encore arrivé)</li>
+</ul>
+<p>Ils se regroupent en deux groupes :</p>
+<ul>
+  <li><strong>Temps simple</strong> : présent de l'indicatif, subjonctif présent…</li>
+  <li><strong>Temps composé</strong> : passé composé, plus-que-parfait de l'indicatif, conditionnel passé…</li>
+</ul>
+
+<h3>Infinitif, Radical, Terminaisons, Groupes et Auxiliaires</h3>
+
+<h4>1- Infinitif</h4>
+<p>Dans le dictionnaire, le verbe s'écrit à l'infinitif donc il est le « nom » du verbe.</p>
+<p><strong>Exemples :</strong> Chanter, Sortir, Aller</p>
+
+<h4>2- Les pronoms</h4>
+<p>En conjugaison française, les pronoms personnels sujets jouent un rôle essentiel : ce sont eux qui indiquent qui fait l’action du verbe.</p>
+<table border='1' style='border-collapse: collapse;'>
+<tr><th>Personne</th><th>Singulier</th><th>Pluriel</th></tr>
+<tr><td>1er</td><td>Je</td><td>Nous</td></tr>
+<tr><td>2ème</td><td>Tu</td><td>Vous</td></tr>
+<tr><td>3ème</td><td>Il, elle, on</td><td>Ils, elles</td></tr>
+</table>
+<p><strong>Remarques :</strong></p>
+<ul>
+  <li>« On » remplace souvent « nous » dans le langage familier.</li>
+  <li>« Vous » peut être un singulier de politesse ou un pluriel.</li>
+  <li>En français, le pronom sujet est obligatoire.</li>
+</ul>
+
+<h4>3- Radical et Terminaisons</h4>
+<p>Le radical d'un verbe est la partie du mot qui ne change pas quand on le conjugue. La partie qui change s'appelle la terminaison.</p>
+<table border='1' style='border-collapse: collapse;'>
+<tr><th>Verbe</th><th>Radical</th><th>Terminaison</th></tr>
+<tr><td>chanter</td><td>chant</td><td>-er</td></tr>
+<tr><td>finir</td><td>fin</td><td>-ir</td></tr>
+<tr><td>appuyer</td><td>appuy</td><td>-er</td></tr>
+</table>
+
+<h4>4- Groupes</h4>
+<p>En français, les verbes sont classés en trois groupes :</p>
+<ul>
+  <li><strong>1er groupe</strong> : verbes en -er (chanter, manger…), sauf <em>aller</em>.</li>
+  <li><strong>2e groupe</strong> : verbes en -ir dont le participe présent finit en -issant (finir, grandir…)</li>
+  <li><strong>3e groupe</strong> : verbes irréguliers (venir, mettre, pouvoir…)</li>
+</ul>
+
+<h4>5- Auxiliaires : Avoir et Être</h4>
+<p>Les auxiliaires sont utilisés dans les temps composés, la voix passive ou certaines formes impersonnelles. Ce sont aussi des verbes à part entière.</p>
+<p><strong>Exemples :</strong> J'ai un stylo. Elle est malade. Sidi est tombé. Nous avons fini nos devoirs.</p>"
+"L'indicatif","<h1>L'Indicatif</h1>
+<p>Ce mode exprime des faits, des actions réelles. Il comprend plusieurs temps, dont le présent, l'imparfait, le passé simple, le futur simple, le passé composé, le plus-que-parfait et le futur antérieur.</p>
+<h2>1 - Le présent</h2>
+<ul>
+  <li>Le présent exprime un fait ou une action qui se déroule au moment où nous parlons. <br>Exemples : Je dors. Marc range ses affaires.</li>
+  <li>Mais on peut l'utiliser pour raconter un fait passé, « comme si on y était ». Afin de donner au lecteur l'impression de vivre l'action.<br>Exemples : Après un violent accident, le pilote sort de son véhicule.</li>
+  <li>On utilise aussi le présent pour exprimer une vérité scientifique ou un fait habituel.<br>Exemples : Le Soleil est une étoile naine. Je me brosse les dents après chaque repas.</li>
+</ul>
+<p>Au présent de l'indicatif, les verbes du premier groupe prennent les terminaisons suivantes : <strong>-e, -es, -e, -ons, -ez, -ent</strong></p>
+<table border='1'>
+  <tr><th>Jouer</th><th>Glisser</th></tr>
+  <tr><td>Je joue</td><td>Je glisse</td></tr>
+  <tr><td>Tu joues</td><td>Tu glisses</td></tr>
+  <tr><td>Il, elle, on joue</td><td>Il, elle, on glisse</td></tr>
+  <tr><td>Nous jouons</td><td>Nous glissons</td></tr>
+  <tr><td>Vous jouez</td><td>Vous glissez</td></tr>
+  <tr><td>Ils, elles jouent</td><td>Ils, elles glissent</td></tr>
+</table>
+<h3>Cas particuliers</h3>
+<ul>
+  <li>Verbes en -cer : il faut placer une cédille sous le c à la 1ère personne du pluriel.</li>
+  <li>Verbes en -ger : il faut ajouter un e muet à la 1ère personne du pluriel.</li>
+  <li>Verbes en -yer : le y se transforme en i devant un e muet.</li>
+  <li>Verbes en -eler et en -eter : ils prennent le plus souvent deux l ou deux t devant un e muet.</li>
+  <li>Verbes en -ier, -uer, -ouer : les terminaisons du singulier et de la 3ème personne du pluriel ne s'entendent pas, mais il faut mettre e, es, e, ent.</li>
+</ul>
+
+<table border='1'>
+  <tr>
+    <th>Lancer</th><th>Manger</th><th>Payer</th><th>Appeler</th><th>Crier</th>
+  </tr>
+  <tr><td>Je lance</td><td>Je mange</td><td>Je paie</td><td>J'appelle</td><td>Je crie</td></tr>
+  <tr><td>Tu lances</td><td>Tu manges</td><td>Tu paies</td><td>Tu appelles</td><td>Tu cries</td></tr>
+  <tr><td>Il, elle, on lance</td><td>Il, elle, on mange</td><td>Il, elle, on paie</td><td>Il, elle, on appelle</td><td>Il, elle, on crie</td></tr>
+  <tr><td>Nous lançons</td><td>Nous mangeons</td><td>Nous payons</td><td>Nous appelons</td><td>Nous crions</td></tr>
+  <tr><td>Vous lancez</td><td>Vous mangez</td><td>Vous payez</td><td>Vous appelez</td><td>Vous criez</td></tr>
+  <tr><td>Ils, elles lancent</td><td>Ils, elles mangent</td><td>Ils, elles paient</td><td>Ils, elles appellent</td><td>Ils, elles crient</td></tr>
+</table>
+<p>Les verbes du deuxième groupe prennent les terminaisons suivantes : <strong>-is, -is, -it, -issons, -issez, -issent</strong></p>
+<table border='1'>
+  <tr><th>Finir</th><th>Choisir</th></tr>
+  <tr><td>Je finis</td><td>Je choisis</td></tr>
+  <tr><td>Tu finis</td><td>Tu choisis</td></tr>
+  <tr><td>Il, elle, on finit</td><td>Il, elle, on choisit</td></tr>
+  <tr><td>Nous finissons</td><td>Nous choisissons</td></tr>
+  <tr><td>Vous finissez</td><td>Vous choisissez</td></tr>
+  <tr><td>Ils, elles finissent</td><td>Ils, elles choisissent</td></tr>
+</table>
+<p>Pour les verbes du troisième groupe, les terminaisons les plus fréquentes sont : <strong>-s, -s, -t, -ons, -ez, -ent</strong></p>
+<p>Mais aussi : <strong>-x, -x, -t, -ons, -ez, -ent</strong> (ex. : je veux, tu peux, il veut)</p>
+<p>Ou encore : <strong>-ds, -ds, -d, -ons, -ez, -ent</strong> (ex. : je prends, tu comprends, il entreprend)</p>
+<table border='1'>
+  <tr>
+    <th>Avoir</th><th>Être</th><th>Aller</th><th>Venir</th><th>Pouvoir</th><th>Prendre</th>
+  </tr>
+  <tr><td>J'ai</td><td>Je suis</td><td>Je vais</td><td>Je viens</td><td>Je peux</td><td>Je prends</td></tr>
+  <tr><td>Tu as</td><td>Tu es</td><td>Tu vas</td><td>Tu viens</td><td>Tu peux</td><td>Tu prends</td></tr>
+  <tr><td>Il, elle, on a</td><td>Il, elle, on est</td><td>Il, elle, on va</td><td>Il, elle vient</td><td>Il, elle, on peut</td><td>Il, elle prend</td></tr>
+  <tr><td>Nous avons</td><td>Nous sommes</td><td>Nous allons</td><td>Nous venons</td><td>Nous pouvons</td><td>Nous prenons</td></tr>
+  <tr><td>Vous avez</td><td>Vous êtes</td><td>Vous allez</td><td>Vous venez</td><td>Vous pouvez</td><td>Vous prenez</td></tr>
+  <tr><td>Ils, elles ont</td><td>Ils, elles sont</td><td>Ils, elles vont</td><td>Ils, elles viennent</td><td>Ils, elles peuvent</td><td>Ils, elles prennent</td></tr>
+</table>
+<h2>2 - L'imparfait</h2>
+<p>L'imparfait de l'indicatif est un temps passé que l'on utilise souvent dans un récit.</p>
+<p><strong>Exemple :</strong> Autrefois, on organisait des veillées.</p>
+<p>Il indique généralement une action qui a duré ou qui s'est répétée dans le passé, sans limites définies.</p>
+<p><strong>Exemple :</strong> Elle éconduisait tous les prétendants.</p>
+<p>À l'imparfait de l'indicatif, les terminaisons sont toujours les mêmes : <strong>-ais, -ais, -ait, -ions, -iez, -aient</strong></p>
+<h3>Les auxiliaires</h3>
+<table border='1'>
+  <tr><th>Avoir</th><th>Être</th></tr>
+  <tr><td>J'avais</td><td>J'étais</td></tr>
+  <tr><td>Tu avais</td><td>Tu étais</td></tr>
+  <tr><td>Il, elle, on avait</td><td>Il, elle, on était</td></tr>
+  <tr><td>Nous avions</td><td>Nous étions</td></tr>
+  <tr><td>Vous aviez</td><td>Vous étiez</td></tr>
+  <tr><td>Ils, elles avaient</td><td>Ils, elles étaient</td></tr>
+</table>
+<h3>Exemples par groupe</h3>
+<table border='1'>
+  <tr><th>Gr.1 - Chanter</th><th>Gr.2 - Finir</th><th>Gr.3 - Faire</th></tr>
+  <tr><td>Je chantais</td><td>Je finissais</td><td>Je faisais</td></tr>
+  <tr><td>Tu chantais</td><td>Tu finissais</td><td>Tu faisais</td></tr>
+  <tr><td>Il, elle, on chantait</td><td>Il, elle finissait</td><td>Il, elle faisait</td></tr>
+  <tr><td>Nous chantions</td><td>Nous finissions</td><td>Nous faisions</td></tr>
+  <tr><td>Vous chantiez</td><td>Vous finissiez</td><td>Vous faisiez</td></tr>
+  <tr><td>Ils, elles chantaient</td><td>Ils, elles finissaient</td><td>Ils, elles faisaient</td></tr>
+</table>
+<p><strong>Attention :</strong></p>
+<ul>
+  <li>Les verbes en-cer : nous lancions... mais je lançais.</li>
+  <li>Les verbes en -ger : nous mangions... mais je mangeais.</li>
+  <li>Les verbes en -ier ou -yer : nous criions, vous criiez.</li>
+</ul>
+<h2>3 - Le passé simple</h2>
+<p>Le passé simple est un temps passé qui exprime une action qui a déjà eu lieu au moment où nous nous exprimons. Il n'est plus utilisé que dans le langage écrit.</p>
+
+<ul>
+  <li><strong>1er groupe :</strong> -ai, -as, -a, -âmes, -âtes, -èrent</li>
+  <li><strong>2e groupe :</strong> -is, -is, -it, -îmes, -îtes, -irent</li>
+  <li><strong>3e groupe :</strong> -is, -is, -it, -îmes, -îtes, -irent ou -us, -us, -ut, -ûmes, -ûtes, -urent</li>
+</ul>
+
+<h3>Exemples</h3>
+<table border='1'>
+  <tr>
+    <th>Gr.1 - Danser</th><th>Gr.2 - Grandir</th><th>Gr.3 - Faire</th><th>Gr.3 - Aller</th><th>Gr.3 - Pouvoir</th><th>Gr.3 - Venir</th>
+  </tr>
+  <tr><td>Je dansai</td><td>Je grandis</td><td>Je fis</td><td>J'allai</td><td>Je pus</td><td>Je vins</td></tr>
+  <tr><td>Tu dansas</td><td>Tu grandis</td><td>Tu fis</td><td>Tu allas</td><td>Tu pus</td><td>Tu vins</td></tr>
+  <tr><td>Il, elle dansa</td><td>Il, elle grandit</td><td>Il, elle fit</td><td>Il, elle alla</td><td>Il, elle put</td><td>Il, elle vint</td></tr>
+  <tr><td>Nous dansâmes</td><td>Nous grandîmes</td><td>Nous fîmes</td><td>Nous allâmes</td><td>Nous pûmes</td><td>Nous vînmes</td></tr>
+  <tr><td>Vous dansâtes</td><td>Vous grandîtes</td><td>Vous fîtes</td><td>Vous allâtes</td><td>Vous pûtes</td><td>Vous vîntes</td></tr>
+  <tr><td>Ils, elles dansèrent</td><td>Ils, elles grandirent</td><td>Ils, elles firent</td><td>Ils, elles allèrent</td><td>Ils, elles purent</td><td>Ils, elles vinrent</td></tr>
+</table>
+
+<h3>Auxiliaires</h3>
+<table border='1'>
+  <tr><th>Avoir</th><th>Être</th></tr>
+  <tr><td>J'eus</td><td>Je fus</td></tr>
+  <tr><td>Tu eus</td><td>Tu fus</td></tr>
+  <tr><td>Il, elle eut</td><td>Il, elle fut</td></tr>
+  <tr><td>Nous eûmes</td><td>Nous fûmes</td></tr>
+  <tr><td>Vous eûtes</td><td>Vous fûtes</td></tr>
+  <tr><td>Ils, elles eurent</td><td>Ils, elles furent</td></tr>
+</table>
+
+<p><strong>Attention :</strong> Ne pas confondre <em>ja'llai</em> (passé simple) et <em>j'allais</em> (imparfait).</p>
+<h2>4 - Le futur simple</h2>
+<p>Le futur simple exprime un fait ou une action qui se déroulera plus tard, elle n'a pas encore eu lieu au moment où nous nous exprimons.</p>
+<p>Les verbes du 1er et 2e groupe : infinitif + terminaisons : <strong>-ai, -as, -a, -ons, -ez, -ont</strong></p>
+
+<p><strong>Attention :</strong></p>
+<ul>
+  <li>Les verbes en -eler et -eter doublent leur consonne (ex : j'appellerai) ou prennent un accent (ex : j'achèterai)</li>
+</ul>
+
+<h3>Exemples</h3>
+<table border='1'>
+  <tr><th>Gr.1 - Garder</th><th>Gr.2 - Réunir</th></tr>
+  <tr><td>Je garderai</td><td>Je réunirai</td></tr>
+  <tr><td>Tu garderas</td><td>Tu réuniras</td></tr>
+  <tr><td>Il, elle gardera</td><td>Il, elle réunira</td></tr>
+  <tr><td>Nous garderons</td><td>Nous réunirons</td></tr>
+  <tr><td>Vous garderez</td><td>Vous réunirez</td></tr>
+  <tr><td>Ils, elles garderont</td><td>Ils, elles réuniront</td></tr>
+</table>
+
+<h3>3e groupe</h3>
+<table border='1'>
+  <tr><th>Avoir</th><th>Être</th><th>Aller</th><th>Venir</th><th>Faire</th><th>Voir</th></tr>
+  <tr><td>J'aurai</td><td>Je serai</td><td>J'irai</td><td>Je viendrai</td><td>Je ferai</td><td>Je verrai</td></tr>
+  <tr><td>Tu auras</td><td>Tu seras</td><td>Tu iras</td><td>Tu viendras</td><td>Tu feras</td><td>Tu verras</td></tr>
+  <tr><td>Il, elle aura</td><td>Il, elle sera</td><td>Il, elle ira</td><td>Il, elle viendra</td><td>Il, elle fera</td><td>Il, elle verra</td></tr>
+  <tr><td>Nous aurons</td><td>Nous serons</td><td>Nous irons</td><td>Nous viendrons</td><td>Nous ferons</td><td>Nous verrons</td></tr>
+  <tr><td>Vous aurez</td><td>Vous serez</td><td>Vous irez</td><td>Vous viendrez</td><td>Vous ferez</td><td>Vous verrez</td></tr>
+  <tr><td>Ils, elles auront</td><td>Ils, elles seront</td><td>Ils, elles iront</td><td>Ils, elles viendront</td><td>Ils, elles feront</td><td>Ils, elles verront</td></tr>
+</table>
+<h2>5 - Les temps composés de l'indicatif</h2>
+<p>Les temps composés expriment une action accomplie ou antérieure à une autre. Ils sont constitués de :</p>
+<ul>
+  <li>L'auxiliaire (avoir ou être) conjugué à un temps simple de l'indicatif</li>
+  <li>Le participe passé du verbe principal</li>
+</ul>
+
+<p>Le participe passé dépend du groupe :</p>
+<ul>
+  <li>1er groupe : -é (ex : j'ai mangé)</li>
+  <li>2e groupe : -i (ex : il a fini)</li>
+  <li>3e groupe : -i, -u, -s, -t (ex : nous avons pris, vu, peint)</li>
+</ul>
+
+<p><strong>Remarques :</strong></p>
+<ul>
+  <li>Avec l'auxiliaire <strong>être</strong> : accord en genre et en nombre avec le sujet</li>
+  <li>Avec <strong>avoir</strong> : pas d'accord, sauf si le COD est placé avant</li>
+</ul>
+
+<h3>Tableau récapitulatif</h3>
+<table border='1'>
+  <tr>
+    <th>Temps</th><th>Auxiliaire conjugué</th><th>Contexte</th><th>Exemples</th>
+  </tr>
+  <tr>
+    <td>Passé composé</td><td>Présent</td><td>Résultat / action passée liée au présent</td><td>Ils ont quitté la salle.</td>
+  </tr>
+  <tr>
+    <td>Plus-que-parfait</td><td>Imparfait</td><td>Antériorité dans le passé</td><td>Elle avait tout préparé.</td>
+  </tr>
+  <tr>
+    <td>Passé antérieur</td><td>Passé simple</td><td>Littéraire, récit chronologique</td><td>Il eut fini quand je partis.</td>
+  </tr>
+  <tr>
+    <td>Futur antérieur</td><td>Futur simple</td><td>Antériorité dans le futur</td><td>Tu auras compris avant la fin.</td>
+  </tr>
+</table>"
