@@ -259,3 +259,64 @@ titre,contenu
     <td>Futur antérieur</td><td>Futur simple</td><td>Antériorité dans le futur</td><td>Tu auras compris avant la fin.</td>
   </tr>
 </table>"
+"Le subjonctif","<h2>Subjonctif</h2>
+<p>Le subjonctif est un mode personnel du verbe qui exprime des actions non assurées, incertaines, 
+souhaitées ou subordonnées à une autre. Contrairement à l’indicatif (mode de la réalité), le 
+subjonctif traduit la subjectivité, le doute, l’émotion, ou encore la volonté. Il est principalement 
+utilisé dans des subordonnées, après certaines conjonctions, locutions, verbes ou expressions 
+impersonnelles. Il apparaît rarement en proposition indépendante.</p>
+
+<h3>1- Les temps</h3>
+<p>Le subjonctif est composé de quatre temps : deux simples (subjonctif présent, subjonctif 
+imparfait) et deux composés (subjonctif passé, plus-que-parfait de subjonctif).</p>
+
+<h4>1-1- Subjonctif présent</h4>
+<p>Tous les verbes ont les mêmes terminaisons : -e, -es, -e, -ions, -iez, -ent, à l’exception des 
+auxilliaires.</p>
+<ul>
+<li>Les verbes du premier groupe conservent le radical de leur infinitif.</li>
+<li>Les verbes du deuxiéme groupe conservent le radical de verbe à l’imparfait de l’indicatif.</li>
+<li>Les verbes du troisiéme groupe ont une conjugaison plus particulière de leur irrégularité.</li>
+</ul>
+
+<table border='1' style="border-collapse: collapse;">
+<tr>
+  <th>avoir</th><th>être</th><th>chanter</th><th>finir</th><th>mettre</th>
+</tr>
+<tr><td>Que j’aie</td><td>Que je sois</td><td>Que je chante</td><td>Que je finisse</td><td>Que je mette</td></tr>
+<tr><td>Que tu aies</td><td>Que tu sois</td><td>Que tu chantes</td><td>Que tu finisses</td><td>Que tu mettes</td></tr>
+<tr><td>Qu’il, elle ait</td><td>Qu’il, elle soit</td><td>Qu’il, elle chante</td><td>Qu’il, elle finisse</td><td>Qu’il, elle mette</td></tr>
+<tr><td>Que nous ayons</td><td>Que nous soyons</td><td>Que nous chantions</td><td>Que nous finissions</td><td>Que nous mettions</td></tr>
+<tr><td>Que vous ayez</td><td>Que vous soyez</td><td>Que vous chantiez</td><td>Que vous finissiez</td><td>Que vous mettiez</td></tr>
+<tr><td>Qu’ils, elles aient</td><td>Qu’ils, elles soient</td><td>Qu’ils, elles chantent</td><td>Qu’ils, elles finissent</td><td>Qu’ils, elles mettent</td></tr>
+</table>
+
+<h4>1-2- Subjonctif imparfait</h4>
+<p>Tous les verbes se conjuguent de la même manière : radical passé simple + -sse, -sses, -t, -ssions, -ssiez, -ssent.</p>
+
+<table border='1' style="border-collapse: collapse;">
+<tr>
+  <th>avoir</th><th>être</th><th>chanter</th><th>finir</th><th>mettre</th>
+</tr>
+<tr><td>Que j’eusse</td><td>Que je fusse</td><td>Que je chantasse</td><td>Que je finisse</td><td>Que je misse</td></tr>
+<tr><td>Que tu eusses</td><td>Que tu fusses</td><td>Que tu chantasses</td><td>Que tu finisses</td><td>Que tu misses</td></tr>
+<tr><td>Qu’il, elle eut</td><td>Qu’il, elle fut</td><td>Qu’il, elle chantat</td><td>Qu’il, elle finit</td><td>Qu’il, elle mit</td></tr>
+<tr><td>Que nous eussions</td><td>Que nous fussions</td><td>Que nous chantassions</td><td>Que nous finissions</td><td>Que nous missions</td></tr>
+<tr><td>Que vous eussiez</td><td>Que vous fussiez</td><td>Que vous chantassiez</td><td>Que vous finissiez</td><td>Que vous missiez</td></tr>
+<tr><td>Qu’ils, elles eussent</td><td>Qu’ils, elles fussent</td><td>Qu’ils, elles chantassent</td><td>Qu’ils, elles finissent</td><td>Qu’ils, elles missent</td></tr>
+</table>
+
+<h4>1-3- Subjonctif passé et Subjonctif plus-que-parfait</h4>
+<p>Ce sont les deux temps composés du subjonctif, leur conjugaison se fait par l’usage d’un auxiliaire plus le participe passé du verbe conjugué.</p>
+
+<table border='1' style="border-collapse: collapse;">
+<tr>
+  <th>Temps</th><th>Auxiliaires conjugués</th><th>Exemples</th>
+</tr>
+<tr>
+  <td>Subjonctif passé</td><td>Subjonctif présent</td><td>Nous sommes heureux qu’elle soit venue.</td>
+</tr>
+<tr>
+  <td>Subjonctif plus-que-parfait</td><td>Subjonctif imparfait</td><td>Je ne croyais pas qu’il eût parlé si durement.</td>
+</tr>
+</table>"
