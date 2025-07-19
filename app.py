@@ -15,11 +15,19 @@ from models import Cours
 from models import Exercice
 from models import Resultat
 from models import Connexion
+from models import Quiz
 from sqlalchemy import func
 from flask import jsonify
-
+from flask import send_file, render_template, redirect, url_for, flash, request, session
+from models import db, Cours 
+from flask import make_response
+from flask import render_template_string
 import io
 import markdown
+import pdfkit
+from datetime import datetime, timedelta
+import json
+
 
 app = Flask(__name__)
 app.secret_key = 'ta_clé_secrète'
@@ -91,11 +99,11 @@ def connexion():
             session['utilisateur_id'] = utilisateur.id
             flash("Connexion réussie.")
 
-
-             # Enregistrer la connexion
-            nouvelle_connexion = Connexion(utilisateur_id=utilisateur.id)
-            db.session.add(nouvelle_connexion)
+            # Après la vérification du mot de passe :
+            connexion = Connexion(utilisateur_id=utilisateur.id, date_connexion=datetime.utcnow())
+            db.session.add(connexion)
             db.session.commit()
+
 
             # Redirection selon le rôle
             if utilisateur.role == 'admin':
@@ -130,10 +138,24 @@ def inscription():
         nouvel_utilisateur = Utilisateur(nom=nom, prenom=prenom, email=email, mot_de_passe=mot_de_passe, role=role)
         db.session.add(nouvel_utilisateur)
         db.session.commit()
-        flash("Inscription réussie.")
         return redirect(url_for('connexion'))
 
     return render_template('inscription.html')
+
+
+@app.route('/mot_de_passe_oublie', methods=['GET', 'POST'])
+def mot_de_passe_oublie():
+    if request.method == 'POST':
+        email = request.form['email'].strip()
+        utilisateur = Utilisateur.query.filter_by(email=email).first()
+
+        if utilisateur:
+            
+            flash("Si cet email est enregistré, un lien de réinitialisation a été envoyé.")
+        else:
+            flash("Aucun utilisateur trouvé avec cet email.")
+
+    return render_template('mot_de_passe_oublie.html')
 
 
 
@@ -153,6 +175,36 @@ def cours_detail(id):
     cours = Cours.query.get_or_404(id)
     contenu_html = markdown.markdown(cours.contenu, extensions=["tables", "fenced_code"])
     return render_template('cours_detail.html', cours=cours, contenu_html=contenu_html)
+
+
+
+
+
+@app.route('/cours/<int:id>/telecharger')
+def telecharger_cours(id):
+    cours = Cours.query.get_or_404(id)
+    rendered = render_template('cours_pdf.html', cours=cours, contenu_html=cours.contenu)
+
+    config = pdfkit.configuration(wkhtmltopdf=r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe')
+
+    pdf = pdfkit.from_string(rendered, False, configuration=config)
+
+    response = make_response(pdf)
+    response.headers['Content-Type'] = 'application/pdf'
+    response.headers['Content-Disposition'] = f'attachment; filename={cours.titre}.pdf'
+
+    return response
+
+
+@app.route('/cours/<int:id>/quiz')
+def get_quiz(id):
+    quizzes = Quiz.query.filter_by(cours_id=id).all()
+    data = [{
+        "question": q.question,
+        "choix": q.choix,
+        "bonne_reponse": q.bonne_reponse
+    } for q in quizzes]
+    return jsonify(data)
 
 
 
@@ -466,6 +518,14 @@ def espace():
 
     return "Bienvenue dans l'espace membre"
 
+def calculer_niveau(total_points):
+    if total_points < 50:
+        return "Débutant"
+    elif total_points < 100:
+        return "Intermédiaire"
+    else:
+        return "Avancé"
+
 @app.route('/user')
 def user():
     if 'utilisateur_id' not in session:
@@ -473,7 +533,65 @@ def user():
         return redirect(url_for('connexion'))
 
     utilisateur = Utilisateur.query.get(session['utilisateur_id'])
-    return render_template('user.html', utilisateur=utilisateur)
+
+    # ➤ Derniers verbes consultés (10 derniers)
+    historique = (
+        db.session.query(Historique, Conjugaison)
+        .join(Conjugaison, Historique.conjugaison_id == Conjugaison.id)
+        .filter(Historique.utilisateur_id == utilisateur.id)
+        .order_by(Historique.date_consultation.desc())
+        .limit(10)
+        .all()
+    )
+
+    total_verbes = (
+        db.session.query(Historique.conjugaison_id)
+        .filter_by(utilisateur_id=utilisateur.id)
+        .distinct()
+        .count()
+    )
+
+    # ➤ Générer les temps disponibles pour chaque verbe
+    temps_par_verbe = {}
+    corrections_par_verbe_temps = {}
+
+    for hist, conj in historique:
+        verbe = conj.verbe
+        temps = conj.temps
+        if verbe not in temps_par_verbe:
+            temps_par_verbe[verbe] = []
+        if temps not in temps_par_verbe[verbe]:
+            temps_par_verbe[verbe].append(temps)
+
+        # Ajout de la conjugaison complète pour vérification
+        if verbe not in corrections_par_verbe_temps:
+            corrections_par_verbe_temps[verbe] = {}
+        corrections_par_verbe_temps[verbe][temps] = conj.conjugaisons
+
+    return render_template(
+        'user.html',
+        utilisateur=utilisateur,
+        historique=historique,
+        total_verbes=total_verbes,
+        temps_par_verbe=temps_par_verbe,
+        corrections_par_verbe_temps=corrections_par_verbe_temps
+    )
+
+
+
+
+
+
+@app.route('/verif_revision')
+def verif_revision():
+    verbe = request.args.get("verbe")
+    temps = request.args.get("temps")
+
+    conj = Conjugaison.query.filter_by(verbe=verbe, temps=temps).first()
+    conjugaisons = conj.conjugaisons.strip().split("\n") if conj else []
+    return jsonify({'bonne': conjugaisons})
+
+
 
 
 @app.route('/professeur')
@@ -690,7 +808,6 @@ def admin():
     )
 
 
-
 @app.route('/admin/gestion_utilisateurs')
 def gestion_utilisateurs():
     if 'utilisateur_id' not in session:
@@ -752,6 +869,9 @@ def bloquer_utilisateur(id):
 
 
 
+
+
+
 @app.route('/admin/statistiques')
 def statistiques():
     if 'utilisateur_id' not in session:
@@ -759,21 +879,34 @@ def statistiques():
         return redirect(url_for('connexion'))
 
     utilisateur = Utilisateur.query.get(session['utilisateur_id'])
+
     if utilisateur.role != 'admin':
-        flash("Accès non autorisé.")
+        flash("Accès réservé à l'administrateur.")
         return redirect(url_for('connexion'))
 
-    connexions_par_date = (
-        db.session.query(func.date(Connexion.timestamp), func.count(Connexion.id))
-        .group_by(func.date(Connexion.timestamp))
-        .order_by(func.date(Connexion.timestamp))
+    # ✅ Calcul des 7 derniers jours
+    aujourd_hui = datetime.utcnow().date()
+    il_y_a_7_jours = aujourd_hui - timedelta(days=6)
+
+    # ✅ Connexions limitées aux 7 derniers jours
+    connexions_par_jour = (
+        db.session.query(
+            func.date(Connexion.date_connexion).label('date'),
+            func.count(Connexion.id).label('nb_connexions')
+        )
+        .filter(Connexion.date_connexion >= il_y_a_7_jours)
+        .group_by(func.date(Connexion.date_connexion))
+        .order_by(func.date(Connexion.date_connexion))
         .all()
     )
 
-    labels = [str(date) for date, _ in connexions_par_date]
-    valeurs = [nb for _, nb in connexions_par_date]
+    # ✅ Créer une liste complète pour chaque jour (même si 0 connexion)
+    labels = [(il_y_a_7_jours + timedelta(days=i)).strftime('%d/%m') for i in range(7)]
+    data_dict = {c.date.strftime('%d/%m'): c.nb_connexions for c in connexions_par_jour}
+    data = [data_dict.get(day, 0) for day in labels]
 
-    return render_template('admin_statistiques.html', labels=labels, valeurs=valeurs)
+    return render_template("admin_statistiques.html", labels=json.dumps(labels), data=json.dumps(data), utilisateur=utilisateur)
+
 
 
 

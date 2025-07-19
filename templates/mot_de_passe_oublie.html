@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Mot de passe oublié</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Roboto', sans-serif;
+      background-image: url("/static/images/v882batch2-kul-12.jpg");
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      animation: backgroundZoom 20s ease-in-out infinite;
+    }
+
+    .form-container {
+      background-color: transparent;
+      border: 2px solid #9c3447;
+      padding: 40px 50px;
+      border-radius: 15px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+      max-width: 450px;
+      width: 100%;
+      text-align: center;
+    }
+
+    h2 {
+      color: #9c3447;
+    }
+
+    input[type="email"] {
+      width: 100%;
+      padding: 12px;
+      margin: 15px 0;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background-color: #9c3447;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #7a2a37;
+    }
+
+    .message {
+      color: #d9534f;
+      margin-top: 10px;
+    }
+
+    a {
+      color: #9c3447;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+
+<div class="form-container">
+  <h2>Mot de passe oublié</h2>
+
+  <form method="POST">
+    <input type="email" name="email" placeholder="Entrez votre adresse email" required><br>
+    <button type="submit">Réinitialiser</button>
+  </form>
+
+  
+
+  <p><a href="{{ url_for('connexion') }}">← Retour à la connexion</a></p>
+</div>
+
+</body>
+</html>

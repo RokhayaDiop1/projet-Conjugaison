@@ -1,5 +1,347 @@
-<h1>Bienvenue {{ utilisateur.prenom }} {{ utilisateur.nom }}</h1>
-<p>Email : {{ utilisateur.email }}</p>
-<p>Rôle : {{ utilisateur.role }}</p>
-<a href="{{ url_for('deconnexion') }}">Se déconnecter</a>
-<a href="{{ url_for('conjugaison') }}" class="column conjugaison">conjugaison</a>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Mon Espace</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    @keyframes fadeInUp {
+    0% {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes logoFadeRotate {
+    0% {
+        opacity: 0;
+        transform: rotate(-20deg) scale(0.8);
+    }
+    100% {
+        opacity: 1;
+        transform: rotate(0deg) scale(1);
+    }
+}
+
+@keyframes backgroundZoom {
+    0% {
+        background-size: 100% auto;
+    }
+    50% {
+        background-size: 105% auto;
+    }
+    100% {
+        background-size: 100% auto;
+    }
+}
+
+/* Base */
+body {
+    margin: 0;
+    font-family: 'Roboto', sans-serif;
+    background-image: url("/static/images/v882batch2-kul-12.jpg");
+    background-size: 100% auto;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    color: #fff;
+    text-align: center;
+    animation: backgroundZoom 20s ease-in-out infinite;
+}
+
+/* Navigation */
+nav {
+    background-color: #9c3447;
+    color: #faf9f9;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+    height: 60px; /* DIMINUÉ */
+    margin: 10px;
+    border-radius: 30px;
+    padding: 10px 25px; /* MOINS DE PADDING VERTICAL */
+    animation: slideDown 0.8s ease-out;
+  
+    
+}
+
+nav .logo img {
+    padding: 0px; /* Enlever l'espace superflu */
+    width: 90px; /* Réduire si besoin */
+}
+
+
+nav a {
+    margin-left: 20px;
+    text-decoration: none;
+    color: #f8f3f2;
+    font-weight: bold;
+    transition: color 0.3s ease;
+}
+
+nav a:hover {
+    color: #ffd1d1;
+}
+
+    .container {
+      max-width: 1000px;
+      margin: 40px auto;
+      background: transparent;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.6);
+      border: 2px solid #9c3447;
+    }
+
+    h1 {
+      color: #9c3447;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .info {
+      margin-bottom: 30px;
+      color: #5e5e5e;
+      border: 1px solid #9c3447;
+    }
+
+    .info p {
+      font-size: 18px;
+    }
+
+    .btns {
+      text-align: center;
+      margin-bottom: 30px;
+      
+    }
+
+    .btns a {
+      margin: 10px;
+      padding: 12px 20px;
+      background-color: #f5bbbb;
+      color: #9c3447;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: bold;
+    }
+
+    .progress-bar {
+      background-color: #eee;
+      border-radius: 20px;
+      height: 20px;
+      width: 100%;
+      margin-top: 10px;
+      overflow: hidden;
+    }
+
+    .progress {
+      background-color: #9c3447;
+      height: 100%;
+      width: {{ progression }}%;
+      transition: width 0.5s;
+    }
+
+    .historique {
+      margin-top: 30px;
+      color: black;
+    }
+
+    .historique h3 {
+      color: #9c3447;
+    }
+
+    .historique ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .historique li {
+      padding: 8px;
+      border-bottom: 1px solid #ddd;
+    }
+
+ .modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.4);
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background-color: #fff;
+  color: #000;
+  padding: 25px;
+  border-radius: 10px;
+  width: 500px;
+  max-width: 90%;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+  animation: fadeInUp 0.4s ease;
+  text-align: center;
+}
+
+  </style>
+</head>
+<body>
+
+<nav>
+        <div class="logo">  
+            <img src="/static/images/logo blanc.png" alt="">
+        </div>
+        <div>
+          <a href="{{ url_for('accueil') }}"><i class="fa-solid fa-house"></i>Accueil</a>
+  
+          {% if session.get('utilisateur_id') %}
+              <a href="{{ url_for('deconnexion') }}">Déconnexion</a>
+          {% else %}
+              <a href="{{ url_for('connexion') }}">Connexion</a>
+          {% endif %}
+        </div>
+    </nav>
+
+
+<div class="container">
+  <h1>Bienvenue {{ utilisateur.prenom }} {{ utilisateur.nom }}</h1>
+
+  <div class="info">
+    <p><strong>Email :</strong> {{ utilisateur.email }}</p>
+    <p><strong>Total verbes consultés :</strong> {{ total_verbes }}</p>
+    <p><strong>Niveau actuel :</strong> <span style="background:#9c3447; color:white; padding:4px 10px; border-radius:20px;">
+  {{ utilisateur.niveau }}
+</span></p><br>
+    
+
+    <p><strong>Progression :</strong></p>
+    <div class="progress-bar">
+      <div class="progress"></div>
+    </div><br><br><br>
+  </div>
+
+  <div class="btns">
+    <a href="{{ url_for('apprentissage') }}"><i class="fas fa-book"></i> Apprentissage</a>
+    <a href="{{ url_for('conjugaison') }}"><i class="fas fa-spell-check"></i> Conjugaison</a>
+  </div>
+
+  <div class="historique">
+    <h3>Derniers verbes consultés</h3>
+    <ul>
+      {% for hist, conj in historique %}
+        <li>
+          <strong>{{ conj.verbe }}</strong> - {{ conj.temps }} ({{ conj.mode.nom }}) le {{ hist.date_consultation.strftime('%d/%m/%Y à %H:%M') }}
+        </li>
+      {% endfor %}
+      {% if historique|length == 0 %}
+        <li>Aucune consultation enregistrée.</li>
+      {% endif %}
+    </ul>
+  </div>
+  {% if historique|length > 0 %}
+  <div style="text-align: center; margin-top: 20px;">
+ <button onclick="ouvrirModalRevision()" class="valider" style="margin-top: 20px;">Faire une révision</button>
+</div>
+
+{% endif %}
+</div>
+
+
+<!-- ✅ MODAL DE REVISION -->
+<div id="revisionModal" class="modal" style="display:none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); justify-content: center; align-items: center; z-index: 9999;">
+  <div class="modal-content" style="background: white; padding: 30px; border-radius: 10px; width: 500px; text-align: center; position: relative;">
+    
+    <h2 style="color: #9c3447;">Révision de conjugaison</h2>
+    
+    <label for="verbeSelect"><strong>Choisir un verbe :</strong></label><br>
+    <select id="verbeSelect" style="padding: 8px; width: 100%; margin-bottom: 20px;">
+      {% for verbe, temps in temps_par_verbe.items() %}
+        <option value="{{ verbe }}">{{ verbe }}</option>
+      {% endfor %}
+    </select>
+
+    <label for="tempsSelect"><strong>Choisir un temps :</strong></label><br>
+    <select id="tempsSelect" style="padding: 8px; width: 100%; margin-bottom: 20px;"></select>
+
+    <form id="revisionForm" method="POST">
+      <label><strong>Ta conjugaison :</strong></label><br>
+      <textarea name="reponse" rows="8" style="width: 100%; margin-top: 10px;" required></textarea><br>
+      <button type="submit" class="valider" style="margin-top: 10px;">Vérifier</button>
+    </form>
+
+    <div id="rev-feedback" style="margin-top: 15px;"></div>
+
+    <button onclick="fermerModalRevision()" style="margin-top: 20px; background:#9c3447; color:white; padding:6px 15px; border:none; border-radius:5px;">Fermer</button>
+  </div>
+</div>
+
+
+<script>
+let tempsParVerbe = {{ temps_par_verbe | tojson }};
+let baseCorrection = {{ corrections_par_verbe_temps | tojson }};
+
+function ouvrirModalRevision() {
+  document.getElementById("revisionModal").style.display = "flex";
+  chargerTemps();
+}
+
+function chargerTemps() {
+  const verbe = document.getElementById("verbeSelect").value;
+  const tempsSelect = document.getElementById("tempsSelect");
+  tempsSelect.innerHTML = "";
+
+  const temps = tempsParVerbe[verbe] || [];
+  temps.forEach(t => {
+    const option = document.createElement("option");
+    option.value = t;
+    option.textContent = t;
+    tempsSelect.appendChild(option);
+  });
+}
+
+// ⚙️ Changer les temps quand on change de verbe
+document.getElementById("verbeSelect").addEventListener("change", chargerTemps);
+
+// ✅ Vérification de la conjugaison
+document.getElementById("revisionForm").addEventListener("submit", function(e) {
+  e.preventDefault();
+  const verbe = document.getElementById("verbeSelect").value;
+  const temps = document.getElementById("tempsSelect").value;
+  const reponse = document.querySelector('textarea[name="reponse"]').value.trim().toLowerCase();
+
+  const bonne_conj = (baseCorrection[verbe] && baseCorrection[verbe][temps]) || "";
+
+  if (!bonne_conj) {
+    document.getElementById("rev-feedback").innerHTML = "Correction non disponible.";
+    return;
+  }
+
+  const user = reponse.replace(/\s+/g, '');
+  const correct = bonne_conj.replace(/\s+/g, '').toLowerCase();
+
+  if (user === correct) {
+    document.getElementById("rev-feedback").innerHTML = `<span style="color:green;">✅ Bonne réponse !</span>`;
+  } else {
+    document.getElementById("rev-feedback").innerHTML = `
+      <span style="color:red;">❌ Mauvaise réponse.</span><br>
+      <strong>Correction :</strong><br>
+      <pre style="text-align:left; background:#f0f0f0; padding:10px;">${bonne_conj}</pre>
+    `;
+  }
+});
+
+function fermerModalRevision() {
+  document.getElementById("revisionModal").style.display = "none";
+}
+</script>
+
+
+
+</body>
+</html>

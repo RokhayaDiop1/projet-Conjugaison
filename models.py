@@ -30,14 +30,7 @@ class Utilisateur(db.Model):
     mot_de_passe = db.Column(db.String(255), nullable=False)
     role = db.Column(db.String(20), default='user')
     bloque = db.Column(db.Boolean, default=False)
-
-
-class Connexion(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    utilisateur_id = db.Column(db.Integer, db.ForeignKey('utilisateur.id'))
-    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
-
-    utilisateur = db.relationship('Utilisateur', backref='connexions')
+    niveau = db.Column(db.String(50), default='Débutant')  
 
 
 
@@ -71,7 +64,7 @@ class Exercice(db.Model):
     __tablename__ = 'exercices'
     
     id = db.Column(db.Integer, primary_key=True)
-    titre = db.Column(db.String(255))  # ➕ Nouveau champ
+    titre = db.Column(db.String(255))  
     type = db.Column(db.String(50))  # qcm, saisie, trou, ordre, etc.
     question = db.Column(db.Text)
     reponse = db.Column(db.Text)
@@ -84,9 +77,32 @@ class Resultat(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     exercice_id = db.Column(db.Integer, db.ForeignKey('exercices.id'), nullable=False)
-    utilisateur_id = db.Column(db.Integer, db.ForeignKey('utilisateur.id'), nullable=True)  # optionnel
+    utilisateur_id = db.Column(db.Integer, db.ForeignKey('utilisateur.id'), nullable=True)  
     reponse_donnee = db.Column(db.String(255))
     score = db.Column(db.Integer)
     date_reponse = db.Column(db.DateTime, default=datetime.utcnow)
 
     exercice = db.relationship('Exercice', backref='resultats')
+
+
+class Connexion(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    utilisateur_id = db.Column(db.Integer, db.ForeignKey('utilisateur.id'))
+    date_connexion = db.Column(db.DateTime, default=datetime.utcnow) 
+
+
+
+
+
+class Quiz(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    question = db.Column(db.Text, nullable=False)
+    choix = db.Column(db.Text, nullable=False)  # Stocker les choix en texte, séparés par |
+    bonne_reponse = db.Column(db.String(1), nullable=False)
+    cours_id = db.Column(db.Integer, db.ForeignKey('cours.id'), nullable=False)
+
+
+
+
+
+

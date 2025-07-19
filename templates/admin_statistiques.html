@@ -3,32 +3,155 @@
 <head>
   <meta charset="UTF-8">
   <title>Statistiques des connexions</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Roboto', sans-serif;
+      background-image: url("/static/images/v882batch2-kul-12.jpg");
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      color: #333;
+    }
+
+    .top-nav {
+      background-color: #9c3447;
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 25px;
+      height: 60px;
+      margin: 10px;
+      border-radius: 30px;
+    }
+
+    .top-nav .logo img {
+      width: 80px;
+    }
+
+    .sidebar {
+      position: fixed;
+      top: 85px;
+      left: 10px;
+      bottom: 50px;
+      width: 250px;
+      height: calc(100% - 50px);
+      background-color: #fdf2f2;
+      border: 2px solid #9c3447;
+      padding-top: 30px;
+      margin-top: 50px;
+      border-radius: 20px;
+      text-align: center;
+    }
+
+    .sidebar a {
+      display: block;
+      padding: 35px;
+      text-decoration: none;
+      color: #9c3447;
+      font-weight: bold;
+      border-bottom: 1px solid #f0e0e0;
+    }
+
+    .sidebar a:hover {
+      background-color: #fbe9e9;
+    }
+
+    .main-content {
+      margin-left: 270px;
+      padding: 40px;
+      padding-top: 80px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #9c3447;
+      margin-bottom: 40px;
+    }
+
+    canvas {
+      background-color: #fff;
+      border: 2px solid #9c3447;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      max-width: 100%;
+    }
+  </style>
 </head>
 <body>
-  <h1>Évolution des connexions</h1>
-  <canvas id="courbeConnexions" width="600" height="300"></canvas>
 
+  <!-- ✅ Barre de navigation horizontale -->
+  <div class="top-nav">
+    <div class="logo">
+      <a href="{{ url_for('accueil') }}">
+        <img src="/static/images/logo blanc.png" alt="Logo">
+      </a>
+    </div>
+    <div>
+      Bienvenue, <strong>{{ utilisateur.prenom }}</strong>
+    </div>
+  </div>
+
+  <!-- ✅ Sidebar verticale -->
+  <div class="sidebar">
+    <i class="fa-solid fa-user-shield" style="color: #9c3447; font-size: 70px;"></i>
+    <a href="{{ url_for('admin') }}"><i class="fas fa-users-cog"></i> Tableau</a>
+    <a href="{{ url_for('gestion_utilisateurs') }}"><i class="fas fa-user-edit"></i> Gérer utilisateurs</a>
+    <a href="{{ url_for('deconnexion') }}"><i class="fas fa-sign-out-alt"></i> Déconnexion</a>
+  </div>
+
+  <!-- ✅ Contenu principal -->
+  <div class="main-content">
+    <h1>Évolution des connexions (7 derniers jours)</h1>
+    <canvas id="courbeConnexions" width="800" height="400"></canvas>
+  </div>
+
+  <!-- ✅ Script Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>
     const ctx = document.getElementById('courbeConnexions').getContext('2d');
     const chart = new Chart(ctx, {
       type: 'line',
       data: {
-        labels: {{ labels | tojson }},
+        labels: {{ labels|safe }},
         datasets: [{
           label: 'Connexions par jour',
-          data: {{ valeurs | tojson }},
-          borderColor: '#9c3447',
+          data: {{ data|safe }},
           backgroundColor: 'rgba(156, 52, 71, 0.2)',
+          borderColor: '#9c3447',
+          borderWidth: 2,
+          tension: 0.4,
           fill: true,
-          tension: 0.4
+          pointBackgroundColor: '#9c3447',
+          pointRadius: 5
         }]
       },
       options: {
         responsive: true,
         scales: {
           y: {
-            beginAtZero: true
+            beginAtZero: true,
+            ticks: {
+              stepSize: 1
+            }
+          }
+        },
+        plugins: {
+          legend: {
+            labels: {
+              color: '#333',
+              font: { weight: 'bold' }
+            }
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                return ` ${context.parsed.y} connexion(s)`;
+              }
+            }
           }
         }
       }

@@ -5,6 +5,7 @@
   <title>{{ cours.titre }}</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
   <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
     /* Animations */
 @keyframes fadeInUp {
@@ -163,6 +164,97 @@ nav a:hover {
     .retour a:hover {
       text-decoration: underline;
     }
+
+    .btn-action {
+  background-color: transparent;
+  color: #9c3447;
+  padding: 12px 25px;
+  font-weight: bold;
+  border: 2px solid #9c3447;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.btn-action:hover {
+  background-color: #9c3447;
+  color: white;
+}
+.btn-danger {
+  background-color: transparent;
+  color: #9c3447;
+  padding: 12px 25px;
+  font-weight: bold;
+  border: 2px solid #9c3447;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+  margin-right: 50px;
+}
+
+.valider{
+   background-color: transparent;
+  color: #9c3447;
+  padding: 16px 25px;
+  font-weight: bold;
+  border: 2px solid #9c3447;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+  margin-right: 50px;
+}
+
+.btn-danger:hover {
+  background-color: #9c3447;
+  color: white;
+}
+
+.valider:hover {
+  background-color: #9c3447;
+  color: white;
+}
+
+.modal {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.6);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    text-align: center;
+    max-width: 600px;
+    width: 90%;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    position: relative;
+    text-align: center;
+    border: 6px solid #9c3447;
+}
+
+.modal-content h3 {
+    color: #9c3447;
+}
+
+.modal-content .close-btn {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    background: transparent;
+    border: none;
+    font-size: 22px;
+    cursor: pointer;
+    color: #9c3447;
+}
+
+
   </style>
 </head>
 <body>
@@ -185,16 +277,149 @@ nav a:hover {
 </nav>
 
 <div class="container">
+  
   <h1 style="text-align: center;">{{ cours.titre }}</h1>
 
  <div class="contenu-cours">
+
   {{ contenu_html | safe }}
+   <div class="actions" style="text-align: center; margin-top: 30px;padding: 20px;">
+  <!-- Bouton téléchargement -->
+   <a href="{{ url_for('telecharger_cours', id=cours.id) }}" class="btn btn-danger">
+    Télécharger ce cours
+  </a>
+
+
+ <button id="btnQuiz" class="valider">Lancer le Quiz</button>
+
+ {% if not session.get('utilisateur_id') %}
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const quizBtn = document.getElementById("btnQuiz");
+    if (quizBtn) {
+      quizBtn.addEventListener("click", function () {
+        document.getElementById("loginModal").style.display = "flex";
+      });
+    }
+  });
+</script>
+
+<!-- Modal d'alerte de connexion -->
+<div id="loginModal" style="display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;">
+  <div style="background: white; padding: 30px; border-radius: 10px; text-align: center; max-width: 400px;">
+    <h2 style="color: #9c3447;">⚠ Connexion requise</h2>
+    <p>Vous devez être connecté pour accéder au quiz.</p>
+    <a href="{{ url_for('connexion') }}" style="display: inline-block; margin-top: 15px; padding: 10px 20px; background: #9c3447; color: white; border-radius: 5px; text-decoration: none;">
+      Se connecter
+    </a>
+    <br>
+    <button onclick="document.getElementById('loginModal').style.display='none'" style="margin-top: 10px; background: none; border: none; color: #9c3447; font-weight: bold; cursor: pointer;">
+      Fermer
+    </button>
+  </div>
+</div>
+{% endif %}
+
+
+
+</div>
+
 </div>
 
   <div class="retour">
     <a href="{{ url_for('cours') }}">&larr; Retour à la liste des cours</a>
   </div>
 </div>
+
+
+<div id="quizModal" class="modal">
+  <div class="modal-content">
+    <button class="close-btn" onclick="fermerModal()">&times;</button>
+    <i class="fas fa-lightbulb" style="color: #9c3447; font-size: 50px;"></i>
+    <h1 style="text-decoration: none; font-size: 25px;">QUIZ</h1>
+    <h3 id="quiz-question"></h3>
+    <form id="quizForm">
+      <div id="quiz-choices" style="text-align: left; margin-top: 10px;"></div>
+      <button type="submit" class="valider" style="margin-top: 15px;">Valider</button>
+    </form>
+    <p id="quiz-feedback" style="margin-top: 15px;"></p>
+    <button onclick="nextQuestion()" class="valider" style="display: none;" id="nextBtn">Suivant</button>
+  </div>
+</div>
+
+
+
+{% if session.get('utilisateur_id') %}
+<script>
+let currentIndex = 0;
+let quizzes = [];
+
+document.getElementById("btnQuiz").addEventListener("click", async function () {
+  const response = await fetch("{{ url_for('get_quiz', id=cours.id) }}");
+  quizzes = await response.json();
+  if (quizzes.length > 0) {
+    currentIndex = 0;
+    showQuestion();
+    document.getElementById("quizModal").style.display = "flex";
+  }
+});
+
+function showQuestion() {
+  const quiz = quizzes[currentIndex];
+  document.getElementById("quiz-question").innerText = quiz.question;
+  const choicesHTML = quiz.choix.split("\n").map(line => {
+    return `<label><input type="radio" name="reponse" value="${line.charAt(0)}"> ${line}</label><br>`;
+  }).join("");
+  document.getElementById("quiz-choices").innerHTML = choicesHTML;
+  document.getElementById("quiz-feedback").innerText = "";
+  document.getElementById("nextBtn").style.display = "none";
+}
+
+document.getElementById("quizForm").addEventListener("submit", function (e) {
+  e.preventDefault();
+  const selected = document.querySelector('input[name="reponse"]:checked');
+  if (!selected) return;
+  const userChoice = selected.value;
+  const correct = quizzes[currentIndex].bonne_reponse;
+  const feedback = document.getElementById("quiz-feedback");
+
+ if (userChoice === correct) {
+  feedback.innerHTML = `<span style="color: green;">✅ Bonne réponse !</span>`;
+} else {
+  // Cherche et affiche l'énoncé complet de la bonne réponse
+  const bonneLigne = quizzes[currentIndex].choix.split("\n").find(c => c.trim().startsWith(correct));
+  feedback.innerHTML = `<span style="color: red;">❌ Mauvaise réponse.</span><br>
+    <strong>Bonne réponse :</strong> ${bonneLigne}`;
+}
+
+
+  document.getElementById("nextBtn").style.display = "inline-block";
+});
+
+function nextQuestion() {
+  currentIndex++;
+  if (currentIndex < quizzes.length) {
+    showQuestion();
+  } else {
+    document.getElementById("quizModal").innerHTML = `
+      <div class="modal-content">
+        <h3>🎉 Vous avez terminé le quiz !</h3>
+        <button onclick="fermerModal()" class="valider" style="margin-top: 15px;">Fermer</button>
+      </div>`;
+  }
+}
+
+function fermerModal() {
+  document.getElementById("quizModal").style.display = "none";
+}
+</script>
+{% endif %}
 
 </body>
 </html>
