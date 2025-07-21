@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Statistiques des connexions</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <h1>Évolution des connexions</h1>
+  <canvas id="courbeConnexions" width="600" height="300"></canvas>
+
+  <script>
+    const ctx = document.getElementById('courbeConnexions').getContext('2d');
+    const chart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: {{ labels | tojson }},
+        datasets: [{
+          label: 'Connexions par jour',
+          data: {{ valeurs | tojson }},
+          borderColor: '#9c3447',
+          backgroundColor: 'rgba(156, 52, 71, 0.2)',
+          fill: true,
+          tension: 0.4
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        }
+      }
+    });
+  </script>
+</body>
+</html>

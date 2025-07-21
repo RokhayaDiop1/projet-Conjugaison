@@ -75,7 +75,7 @@ nav {
 
 nav .logo img {
     padding: 0px; /* Enlever l'espace superflu */
-    width: 150px; /* Réduire si besoin */
+    width: 90px; /* Réduire si besoin */
 }
 
 
@@ -161,14 +161,16 @@ nav a:hover {
   <nav>
     <div class="logo">
       <a href="{{ url_for('accueil') }}">
-        <img src="/static/images/logo.png" width="120">
+        <img src="/static/images/logo blanc.png">
       </a>
     </div>
     <div>
       <a href="{{ url_for('accueil') }}">Accueil</a>
       {% if session.get('utilisateur_id') %}
+              <a href="{{ url_for('apprentissage') }}" style="margin-left: 20px; padding: 8px 16px; border-radius: 5px; text-decoration: none; color: #f8f3f2; ">Apprentissage</a>
         <a href="{{ url_for('deconnexion') }}">Déconnexion</a>
       {% else %}
+              <a href="{{ url_for('apprentissage') }}" style="margin-left: 20px; padding: 8px 16px; border-radius: 5px; text-decoration: none; color: #f8f3f2; ">Apprentissage</a>
         <a href="{{ url_for('connexion') }}">Connexion</a>
       {% endif %}
     </div>

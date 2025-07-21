@@ -12,10 +12,14 @@ from datetime import datetime
 import csv
 from flask import request
 from models import Cours
+from models import Exercice
+from models import Resultat
+from models import Connexion
+from sqlalchemy import func
+from flask import jsonify
+
 import io
-
-
-
+import markdown
 
 app = Flask(__name__)
 app.secret_key = 'ta_clé_secrète'
@@ -81,51 +85,55 @@ def connexion():
     if request.method == 'POST':
         email = request.form['email']
         mot_de_passe = request.form['mot_de_passe']
-
         utilisateur = Utilisateur.query.filter_by(email=email).first()
 
         if utilisateur and check_password_hash(utilisateur.mot_de_passe, mot_de_passe):
             session['utilisateur_id'] = utilisateur.id
-            flash("")
+            flash("Connexion réussie.")
+
+
+             # Enregistrer la connexion
+            nouvelle_connexion = Connexion(utilisateur_id=utilisateur.id)
+            db.session.add(nouvelle_connexion)
+            db.session.commit()
+
+            # Redirection selon le rôle
             if utilisateur.role == 'admin':
                 return redirect(url_for('admin'))
+            elif utilisateur.role == 'professeur':
+                return redirect(url_for('professeur'))
             else:
                 return redirect(url_for('user'))
 
         else:
             flash("Identifiants incorrects.")
+            
+
+            
 
     return render_template('connexion.html')
+
 
 @app.route('/inscription', methods=['GET', 'POST'])
 def inscription():
     if request.method == 'POST':
         nom = request.form['nom']
-        prenom = request.form['prenom']  
+        prenom = request.form['prenom']
         email = request.form['email']
         mot_de_passe = generate_password_hash(request.form['mot_de_passe'])
-        role = 'user'  # Par défaut
+        role = 'user'
 
-        # Vérifie que l'email n'est pas déjà utilisé
         if Utilisateur.query.filter_by(email=email).first():
             flash("Cet email est déjà utilisé.")
             return redirect(url_for('inscription'))
 
-        nouvel_utilisateur = Utilisateur(
-            nom=nom,
-            prenom=prenom,
-            email=email,
-            mot_de_passe=mot_de_passe,
-            role=role
-        )
-
+        nouvel_utilisateur = Utilisateur(nom=nom, prenom=prenom, email=email, mot_de_passe=mot_de_passe, role=role)
         db.session.add(nouvel_utilisateur)
         db.session.commit()
         flash("Inscription réussie.")
         return redirect(url_for('connexion'))
 
     return render_template('inscription.html')
-
 
 
 
@@ -143,12 +151,187 @@ def cours():
 @app.route('/cours/<int:id>')
 def cours_detail(id):
     cours = Cours.query.get_or_404(id)
-    return render_template('cours_detail.html', cours=cours)
+    contenu_html = markdown.markdown(cours.contenu, extensions=["tables", "fenced_code"])
+    return render_template('cours_detail.html', cours=cours, contenu_html=contenu_html)
+
 
 
 @app.route('/exercices')
 def exercices():
     return render_template('exercices.html')
+
+
+# ⚙️ Barème de points selon le niveau
+points_par_niveau = {
+    'débutant': 3,
+    'intermédiaire': 5,
+    'avancé': 7
+}
+
+
+
+@app.route('/exercices/qcm', methods=['GET', 'POST'])
+def exercices_qcm():
+    niveau = request.args.get('niveau') or session.get('niveau_selectionne')
+    if not niveau:
+        return render_template('exercices_qcm.html', exercice=None)
+
+    # Réinitialiser si changement de niveau
+    if niveau != session.get('niveau_selectionne'):
+        session['qcm_index'] = 0
+        session['niveau_selectionne'] = niveau
+        session['score_session'] = 0  # 🔸 Initialiser le score pour la session
+        session.pop('reponse_donnee', None)
+        session.pop('afficher_correction', None)
+
+
+    exercices = Exercice.query.filter_by(type='qcm', niveau=niveau).all()
+    if not exercices:
+        return render_template('exercices_qcm.html', exercice=None)
+
+    if 'qcm_index' not in session:
+        session['qcm_index'] = 0
+
+    index = session['qcm_index']
+
+    # ➤ si "suivant" est cliqué, on passe à l'exercice suivant
+    if request.args.get('suivant') == '1':
+        session['qcm_index'] += 1
+        return redirect(url_for('exercices_qcm', niveau=niveau))
+
+    if index >= len(exercices):
+        total_score = session.get('score_session', 0)
+        total_possible = len(exercices) * (
+            3 if niveau == 'débutant' else 5 if niveau == 'intermédiaire' else 7
+        )
+        session.pop('qcm_index', None)
+        session.pop('niveau_selectionne', None)
+        session.pop('score_session', None)  # 🔸 on peut vider le score ensuite
+
+        return render_template(
+            'exercices_qcm.html',
+            exercice=None,
+            niveau=niveau,
+            afficher_modal_score=True,
+            total_score=total_score,
+            total_possible=total_possible
+        )
+
+    exercice = exercices[index]
+
+    if request.method == 'POST':
+        reponse_donnee = request.form['reponse']
+        est_correcte = (reponse_donnee.strip() == exercice.reponse.strip())
+
+        score = 0
+        if est_correcte:
+            score = 3 if niveau == 'débutant' else 5 if niveau == 'intermédiaire' else 7
+            session['score_session'] = session.get('score_session', 0) + score
+
+
+        resultat = Resultat(
+            exercice_id=exercice.id,
+            utilisateur_id=session.get('utilisateur_id'),
+            reponse_donnee=reponse_donnee,
+            score=score
+        )
+        db.session.add(resultat)
+        db.session.commit()
+
+        session['reponse_donnee'] = reponse_donnee
+        session['afficher_correction'] = True
+        return redirect(url_for('exercices_qcm', niveau=niveau))
+
+    reponse_donnee = session.pop('reponse_donnee', None)
+    afficher_correction = session.pop('afficher_correction', False)
+    progression = int((index + 1) / len(exercices) * 100)
+
+    return render_template(
+        'exercices_qcm.html',
+        exercice=exercice,
+        niveau=niveau,
+        numero_question=index + 1,
+        total_questions=len(exercices),
+        progression=progression,
+        reponse_donnee=reponse_donnee,
+        show_quiz=True
+    )
+
+
+
+
+
+@app.route('/exercices/trou', methods=['GET', 'POST'])
+def exercices_trou():
+    niveau = request.args.get('niveau') or session.get('niveau_trou')
+    if not niveau:
+        return render_template('exercices_trou.html', exercice=None)
+
+    if niveau != session.get('niveau_trou'):
+        session['niveau_trou'] = niveau
+        session['index_trou'] = 0
+        session['score_trou'] = 0
+
+    exercices = Exercice.query.filter_by(type='trou', niveau=niveau).all()
+    if not exercices:
+        return render_template('exercices_trou.html', exercice=None)
+
+    index = session.get('index_trou', 0)
+
+    if index >= len(exercices):
+        total_score = session.pop('score_trou', 0)
+        total_possible = len(exercices) * (
+            3 if niveau == 'débutant' else 5 if niveau == 'intermédiaire' else 7
+        )
+        session.pop('niveau_trou', None)
+        session.pop('index_trou', None)
+        return render_template('exercices_trou.html',
+                               exercice=None,
+                               afficher_modal_score=True,
+                               total_score=total_score,
+                               total_possible=total_possible,
+                               niveau=niveau)
+
+    exercice = exercices[index]
+
+    if request.method == 'POST':
+        reponse_donnee = request.form.get('reponse', '').strip().lower()
+        bonne_reponse = exercice.reponse.strip().lower()
+        est_correcte = reponse_donnee == bonne_reponse
+
+        score = 0
+        if est_correcte:
+            score = 3 if niveau == 'débutant' else 5 if niveau == 'intermédiaire' else 7
+
+        resultat = Resultat(
+            exercice_id=exercice.id,
+            utilisateur_id=session.get('utilisateur_id'),
+            reponse_donnee=reponse_donnee,
+            score=score
+        )
+        db.session.add(resultat)
+        db.session.commit()
+
+        session['score_trou'] += score
+        session['index_trou'] = index + 1
+
+        return redirect(url_for('exercices_trou', niveau=niveau))
+
+    progression = int((index + 1) / len(exercices) * 100)
+
+    return render_template('exercices_trou.html',
+                           exercice=exercice,
+                           niveau=niveau,
+                           numero_question=index + 1,
+                           total_questions=len(exercices),
+                           progression=progression)
+
+
+@app.route('/exercices/libre')
+def exercices_libre():
+    exercices = Exercice.query.filter_by(type='libre').all()
+    return render_template('exercices_libre.html', exercices=exercices)
+
 
 @app.route('/chatbot')
 def chatbot():
@@ -281,7 +464,7 @@ def espace():
         flash("Veuillez vous connecter pour accéder à cette page.")
         return redirect(url_for('connexion'))
 
-    return "Bienvenue dans l’espace membre"
+    return "Bienvenue dans l'espace membre"
 
 @app.route('/user')
 def user():
@@ -293,21 +476,34 @@ def user():
     return render_template('user.html', utilisateur=utilisateur)
 
 
-@app.route('/admin')
-def admin():
+@app.route('/professeur')
+def professeur():
     if 'utilisateur_id' not in session:
         flash("Veuillez vous connecter.")
         return redirect(url_for('connexion'))
 
     utilisateur = Utilisateur.query.get(session['utilisateur_id'])
-
-    if utilisateur.role != 'admin':
-        flash("Accès réservé à l'administrateur.")
+    if utilisateur.role != 'professeur':
+        flash("Accès réservé aux professeurs.")
         return redirect(url_for('connexion'))
 
-    return render_template('admin.html', utilisateur=utilisateur)
+    total_utilisateurs = Utilisateur.query.count()
+    total_cours = Cours.query.count()
+    total_historiques = Historique.query.count()
+    total_exercices = Exercice.query.count()
+
+
+    return render_template('professeur.html',
+                       utilisateur=utilisateur,
+                       total_utilisateurs=total_utilisateurs,
+                       total_cours=total_cours,
+                       total_historiques=total_historiques,
+                       total_exercices=total_exercices)
+
 
     
+
+
 
 @app.route('/importer-cours', methods=['GET', 'POST'])
 def importer_cours():
@@ -338,6 +534,246 @@ def importer_cours():
             <button type="submit">Importer</button>
         </form>
     '''
+
+
+
+@app.route('/gerer_cours', methods=['GET', 'POST'])
+def gerer_cours():
+    if 'utilisateur_id' not in session:
+        flash("Veuillez vous connecter.")
+        return redirect(url_for('connexion'))
+
+    utilisateur = Utilisateur.query.get(session['utilisateur_id'])
+    if utilisateur.role != 'professeur':
+        return redirect(url_for('connexion'))
+
+    # Ajouter un cours
+    if request.method == 'POST':
+        titre = request.form['titre']
+        contenu = request.form['contenu']
+        if titre and contenu:
+            nouveau_cours = Cours(titre=titre, contenu=contenu)
+            db.session.add(nouveau_cours)
+            db.session.commit()
+            return redirect(url_for('gerer_cours'))
+
+    cours = Cours.query.all()
+    return render_template('gerer_cours.html', utilisateur=utilisateur, cours=cours)
+
+
+
+import markdown
+
+@app.route('/ajouter_cours', methods=['GET', 'POST'])
+def ajouter_cours():
+    if request.method == 'POST':
+        titre = request.form['titre'].strip()
+        contenu_brut = request.form['contenu'].strip()
+
+        # Convertir le Markdown en HTML
+        contenu_html = markdown.markdown(
+            contenu_brut, extensions=['extra', 'tables', 'fenced_code']
+        )
+
+        cours = Cours(titre=titre, contenu=contenu_html)
+        db.session.add(cours)
+        db.session.commit()
+
+        flash("Cours ajouté avec succès.")
+        return redirect(url_for('gerer_cours'))
+
+    return render_template('ajouter_cours.html')
+
+
+
+
+
+@app.route('/modifier_cours', methods=['GET', 'POST'])
+def modifier_cours():
+    cours_id = request.args.get('id')
+    cours = None
+
+    if cours_id:
+        cours = Cours.query.get_or_404(cours_id)
+
+    if request.method == 'POST':
+        id_cours = request.form['id']
+        titre = request.form['titre'].strip()
+        contenu_html = request.form['contenu'].strip()  # ✅ On garde le HTML tel quel
+
+        cours_modif = Cours.query.get_or_404(id_cours)
+        cours_modif.titre = titre
+        cours_modif.contenu = contenu_html  # ✅ Pas de transformation
+
+        db.session.commit()
+        flash("Cours modifié avec succès.")
+        return redirect(url_for('modifier_cours', id=id_cours))  # Garde l'ID pour rester sur le même cours
+
+    tous_les_cours = Cours.query.all()
+    return render_template('modifier_cours.html', cours=cours, cours_list=tous_les_cours)
+
+@app.route('/ajouter_exercice', methods=['GET', 'POST'])
+def ajouter_exercice():
+    if request.method == 'POST':
+        titre = request.form['titre'].strip()
+        type_ex = request.form['type'].strip()
+        niveau = request.form['niveau'].strip()
+        question = request.form['question'].strip()
+        reponse = request.form['reponse'].strip()
+        choix = request.form.get('choix', '').strip()  # optionnel
+
+        exercice = Exercice(
+            titre=titre,
+            type=type_ex,
+            niveau=niveau,
+            question=question,
+            reponse=reponse,
+            choix=choix
+        )
+        db.session.add(exercice)
+        db.session.commit()
+        flash("Exercice ajouté avec succès.")
+        return redirect(url_for('ajouter_exercice'))
+
+    return render_template('ajouter_exercice.html')
+
+@app.route('/professeur/modifier_exercice')
+@app.route('/professeur/modifier_exercice/<int:id>', methods=['GET', 'POST'])
+def modifier_exercice(id=None):
+    exercice = Exercice.query.get(id) if id else None
+    exercices = Exercice.query.all()
+
+    if request.method == 'POST' and exercice:
+        exercice.titre = request.form['titre']
+        exercice.type = request.form['type']
+        exercice.niveau = request.form['niveau']
+        exercice.question = request.form['question']
+        exercice.choix = request.form.get('choix', '')
+        exercice.reponse = request.form['reponse']
+        db.session.commit()
+        flash("Exercice modifié avec succès.")
+        return redirect(url_for('modifier_exercice', id=exercice.id))
+
+    return render_template("modifier_exercice.html", exercice=exercice, exercices=exercices)
+
+@app.route('/admin/supprimer_exercice/<int:id>', methods=['POST'])
+def supprimer_exercice(id):
+    exercice = Exercice.query.get_or_404(id)
+    db.session.delete(exercice)
+    db.session.commit()
+    flash("Exercice supprimé avec succès.")
+    return redirect(url_for('modifier_exercice'))
+
+
+
+
+@app.route('/admin')
+def admin():
+    if 'utilisateur_id' not in session:
+        flash("Veuillez vous connecter.")
+        return redirect(url_for('connexion'))
+
+    utilisateur = Utilisateur.query.get(session['utilisateur_id'])
+
+    if utilisateur.role != 'admin':
+        flash("Accès réservé à l'administrateur.")
+        return redirect(url_for('connexion'))
+
+    utilisateurs = Utilisateur.query.all()
+    
+    return render_template(
+        'admin.html',
+        utilisateur=utilisateur,
+        total_utilisateurs=len(utilisateurs),
+        total_professeurs=len([u for u in utilisateurs if u.role == 'professeur']),
+        total_eleves=len([u for u in utilisateurs if u.role == 'user'])
+    )
+
+
+
+@app.route('/admin/gestion_utilisateurs')
+def gestion_utilisateurs():
+    if 'utilisateur_id' not in session:
+        flash("Veuillez vous connecter.")
+        return redirect(url_for('connexion'))
+
+    utilisateur = Utilisateur.query.get(session['utilisateur_id'])
+
+    if utilisateur.role != 'admin':
+        flash("Accès réservé à l'administrateur.")
+        return redirect(url_for('connexion'))
+
+    utilisateurs = Utilisateur.query.all()
+    return render_template('admin_gestion_utilisateurs.html', utilisateurs=utilisateurs, utilisateur=utilisateur)
+
+
+
+
+
+
+@app.route('/admin/utilisateur/<int:id>/changer_role', methods=['POST'])
+def changer_role_utilisateur(id):
+    if 'utilisateur_id' not in session:
+        flash("Veuillez vous connecter.")
+        return redirect(url_for('connexion'))
+
+    admin = Utilisateur.query.get(session['utilisateur_id'])
+    if admin.role != 'admin':
+        flash("Accès réservé à l'administrateur.")
+        return redirect(url_for('connexion'))
+
+    utilisateur = Utilisateur.query.get_or_404(id)
+    nouveau_role = request.form['nouveau_role']
+    utilisateur.role = nouveau_role
+    db.session.commit()
+    flash(f"Rôle de {utilisateur.prenom} mis à jour en {nouveau_role}.", "success")
+    return redirect(url_for('gestion_utilisateurs'))
+
+
+@app.route('/admin/utilisateur/<int:id>/bloquer', methods=['POST'])
+def bloquer_utilisateur(id):
+    if 'utilisateur_id' not in session:
+        flash("Connexion requise.")
+        return redirect(url_for('connexion'))
+
+    admin = Utilisateur.query.get(session['utilisateur_id'])
+    if admin.role != 'admin':
+        flash("Accès non autorisé.")
+        return redirect(url_for('connexion'))
+
+    utilisateur = Utilisateur.query.get_or_404(id)
+    utilisateur.bloque = not utilisateur.bloque
+    db.session.commit()
+
+    action = "bloqué" if utilisateur.bloque else "débloqué"
+    flash(f"⚠️ Utilisateur {utilisateur.prenom} a été {action}.", "warning")
+    return redirect(url_for('gestion_utilisateurs'))
+
+
+
+
+@app.route('/admin/statistiques')
+def statistiques():
+    if 'utilisateur_id' not in session:
+        flash("Veuillez vous connecter.")
+        return redirect(url_for('connexion'))
+
+    utilisateur = Utilisateur.query.get(session['utilisateur_id'])
+    if utilisateur.role != 'admin':
+        flash("Accès non autorisé.")
+        return redirect(url_for('connexion'))
+
+    connexions_par_date = (
+        db.session.query(func.date(Connexion.timestamp), func.count(Connexion.id))
+        .group_by(func.date(Connexion.timestamp))
+        .order_by(func.date(Connexion.timestamp))
+        .all()
+    )
+
+    labels = [str(date) for date, _ in connexions_par_date]
+    valeurs = [nb for _, nb in connexions_par_date]
+
+    return render_template('admin_statistiques.html', labels=labels, valeurs=valeurs)
 
 
 

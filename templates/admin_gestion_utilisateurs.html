@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Gérer les utilisateurs</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Roboto', sans-serif;
+      background-image: url("/static/images/v882batch2-kul-12.jpg");
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      color: #333;
+    }
+
+    .top-nav {
+      background-color: #9c3447;
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 25px;
+      height: 60px;
+      margin: 10px;
+      border-radius: 30px;
+    }
+
+    .top-nav .logo img {
+      width: 80px;
+    }
+
+   /* ✅ Sidebar */
+    .sidebar {
+      position: fixed;
+      top: 85px; /* hauteur de la navbar horizontale */
+      left: 10px;
+      bottom: 50px;
+      width: 250px;
+      height: calc(100% - 50px);
+      background-color: #fdf2f2;
+      border: 2px solid #9c3447;
+      padding-top: 30px;
+      margin-top: 50px;
+      border-radius: 20px;
+      text-align: center;
+      
+  
+    }
+
+    .sidebar a {
+      display: block;
+      padding: 35px;
+      text-decoration: none;
+      color: #9c3447;
+      font-weight: bold;
+      border-bottom: 1px solid #f0e0e0;
+    }
+
+    .sidebar a:hover {
+      background-color: #fbe9e9;
+    }
+    .main-content {
+      margin-left: 270px;
+      padding: 30px;
+      padding-top: 40px;
+    }
+
+    h1 {
+      color: #9c3447;
+      margin-bottom: 30px;
+      text-align: center;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    th, td {
+      padding: 15px;
+      border-bottom: 1px solid #ddd;
+      text-align: left;
+    }
+
+    th {
+      background-color: #9c3447;
+      color: white;
+    }
+
+    tr:hover {
+      background-color: #f9f2f2;
+    }
+
+    .btn {
+      padding: 8px 15px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .btn-role {
+      background-color: #f5bbbb;
+      color: #9c3447;
+    }
+
+    .btn-bloquer {
+      background-color: #e74c3c;
+      color: white;
+    }
+
+
+    .modal-flash {
+  display: block; /* affiché par défaut si message existe */
+  position: fixed;
+  z-index: 9999;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0,0,0,0.5);
+  animation: fadeIn 0.4s;
+}
+
+.modal-content-flash {
+  background-color: #fff;
+  margin: 15% auto;
+  padding: 25px;
+  padding-top: 90px;
+  border: 2px solid #9c3447;
+  width: 300px;
+  height: 180px;
+  border-radius: 10px;
+  border: 2px solid #9c3447;
+  color: #9c3447;
+  text-align: center;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+}
+
+.close-flash {
+  color: #aaa;
+  float: right;
+  font-size: 25px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.close-flash:hover {
+  color: #000;
+}
+
+@keyframes fadeIn {
+  from {opacity: 0}
+  to {opacity: 1}
+}
+
+
+
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <div class="top-nav">
+    <div class="logo">
+      <a href="{{ url_for('accueil') }}">
+        <img src="/static/images/logo blanc.png">
+      </a>
+    </div>
+    <div>
+      Bienvenue, <strong>{{ utilisateur.prenom }}</strong>
+    </div>
+  </div>
+
+  <div class="sidebar">
+    <i class="fa-solid fa-user-shield" style="color: #9c3447; font-size: 70px;"></i>
+    <a href="{{ url_for('admin') }}"><i class="fas fa-users-cog"></i>Tableau</a>
+    <a href="#"><i class="fas fa-chart-bar"></i> Statistiques</a>
+    <a href="{{ url_for('deconnexion') }}"><i class="fas fa-sign-out-alt"></i> Déconnexion</a>
+  </div>
+
+  <!-- Main content -->
+  <div class="main-content">
+    <h1>Gestion des utilisateurs</h1>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Nom</th>
+          <th>Prénom</th>
+          <th>Email</th>
+          <th>Rôle</th>
+          <th>Bloqué</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for user in utilisateurs %}
+          {% if user.id != utilisateur.id %}
+          <tr>
+            <td>{{ user.nom }}</td>
+            <td>{{ user.prenom }}</td>
+            <td>{{ user.email }}</td>
+            <td>{{ user.role }}</td>
+            <td>{{ 'Oui' if user.bloque else 'Non' }}</td>
+            <td>
+              <!-- Formulaire de changement de rôle -->
+              <form action="{{ url_for('changer_role_utilisateur', id=user.id) }}" method="POST" style="display:inline-block;">
+                <select name="nouveau_role">
+                  <option value="user" {% if user.role == 'user' %}selected{% endif %}>Apprenant</option>
+                  <option value="professeur" {% if user.role == 'professeur' %}selected{% endif %}>Professeur</option>
+                </select>
+                <button class="btn btn-role" type="submit">Changer</button>
+              </form>
+
+              <!-- Formulaire de blocage -->
+              <form action="{{ url_for('bloquer_utilisateur', id=user.id) }}" method="POST" style="display:inline-block;">
+                <button class="btn btn-bloquer" type="submit">
+                  {% if user.bloque %}Débloquer{% else %}Bloquer{% endif %}
+                </button>
+              </form>
+            </td>
+          </tr>
+          {% endif %}
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+
+
+  {% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <div id="flashModal" class="modal-flash">
+      <div class="modal-content-flash">
+        <span id="closeFlashModal" class="close-flash">&times;</span>
+        <i class="fa-solid fa-user-shield" style="color: #9c3447; font-size: 70px;"></i>
+        {% for message in messages %}
+          <p>{{ message }}</p>
+        {% endfor %}
+      </div>
+    </div>
+  {% endif %}
+{% endwith %}
+
+
+
+<script>
+  // Fermer le modal quand on clique sur la croix
+  document.getElementById("closeFlashModal")?.addEventListener("click", function() {
+    document.getElementById("flashModal").style.display = "none";
+  });
+
+  // Fermer automatiquement après 4 secondes
+  setTimeout(function() {
+    const modal = document.getElementById("flashModal");
+    if(modal) modal.style.display = "none";
+  }, 4000);
+</script>
+
+
+</body>
+</html>

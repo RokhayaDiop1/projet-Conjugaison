@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Résultat</title>
+</head>
+<body>
+    <h1>🎉 Bravo !</h1>
+    <p>Vous avez terminé tous les exercices du niveau <strong>{{ niveau }}</strong>.</p>
+    <p>Votre score : <strong>{{ score }} / {{ total * 5 }}</strong></p>
+    <a href="{{ url_for('exercices_qcm') }}">🔁 Recommencer</a>
+</body>
+</html>

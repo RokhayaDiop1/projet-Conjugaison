@@ -156,7 +156,7 @@
   
     <div class="logo-header">
       <a href="{{ url_for('accueil') }}">
-        <img src="/static/images/logo1 copie.png" alt="Logo">
+        <img src="/static/images/logo2_copie-removebg-preview.png" alt="Logo">
       </a>
     </div>
 
@@ -169,15 +169,7 @@
     <h2>Connexion</h2>
     
 
-    {% with messages = get_flashed_messages() %}
-      {% if messages %}
-        <div class="messages">
-          {% for message in messages %}
-            <p>{{ message }}</p>
-          {% endfor %}
-        </div>
-      {% endif %}
-    {% endwith %}
+  
 
     <form method="POST">
       <input type="email" name="email" placeholder="Email" required><br>

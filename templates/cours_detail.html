@@ -6,6 +6,40 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
   <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
   <style>
+    /* Animations */
+@keyframes fadeInUp {
+    0% {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes logoFadeRotate {
+    0% {
+        opacity: 0;
+        transform: rotate(-20deg) scale(0.8);
+    }
+    100% {
+        opacity: 1;
+        transform: rotate(0deg) scale(1);
+    }
+}
+
+@keyframes backgroundZoom {
+    0% {
+        background-size: 100% auto;
+    }
+    50% {
+        background-size: 105% auto;
+    }
+    100% {
+        background-size: 100% auto;
+    }
+}
     body {
       font-family: 'Roboto', sans-serif;
       margin: 0;
@@ -50,6 +84,7 @@ nav a:hover {
 
     .container {
       max-width: 900px;
+      color: #000;
       margin: 40px auto;
       background-color: transparent;
       border-radius: 10px;
@@ -135,7 +170,7 @@ nav a:hover {
 <nav>
   <div>
     <a href="{{ url_for('accueil') }}">
-      <img src="/static/images/logo.png" alt="Logo" width="120px">
+      <img src="/static/images/logo blanc.png" alt="Logo" width="90px">
     </a>
   </div>
   <div>
@@ -152,9 +187,9 @@ nav a:hover {
 <div class="container">
   <h1 style="text-align: center;">{{ cours.titre }}</h1>
 
-  <div class="contenu-cours">
-    {{ cours.contenu | safe }}
-  </div>
+ <div class="contenu-cours">
+  {{ contenu_html | safe }}
+</div>
 
   <div class="retour">
     <a href="{{ url_for('cours') }}">&larr; Retour à la liste des cours</a>

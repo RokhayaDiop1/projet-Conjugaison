@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Exercices Texte à Trou</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        nav {
+            color: #faf9f9;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+            height: 60px;
+            margin: 10px;
+            border-radius: 30px;
+            padding: 10px 25px;
+            background-color: #9c3447;
+        }
+
+        nav .logo img {
+            width: 150px;
+        }
+
+        nav a {
+            margin-left: 20px;
+            text-decoration: none;
+            color: #f8f3f2;
+            font-weight: bold;
+            transition: color 0.3s ease;
+        }
+
+        nav a:hover {
+            color: #ffd1d1;
+        }
+
+        .main-content {
+            display: flex;
+            max-width: 1300px;
+            margin: 100px auto;
+            gap: 50px;
+        }
+
+        .levels {
+            width: 30%;
+            padding: 50px;
+            padding-right: 100px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            text-align: center;
+            border: 2px solid #9c3447;
+            background: transparent;
+        }
+
+        .levels button {
+            width: 100%;
+            padding: 15px;
+            margin: 30px;
+            background-color: #f5bbbb;
+            border: none;
+            color: #0a0a0a;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .levels button:hover {
+            background-color: #ba4e5f;
+            color: white;
+        }
+
+        .quiz-section {
+            width: 70%;
+            background: transparent;
+            border: 2px solid #9c3447;
+            padding: 25px;
+            padding-top: 80px;
+            margin: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .progress-bar {
+            height: 10px;
+            background: #ddd;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .progress {
+            height: 10px;
+            background: #9c3447;
+            transition: width 0.3s ease;
+        }
+
+        .question {
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: #0f0f0f;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+        }
+
+        .valider {
+            padding: 12px 20px;
+            background: #9c3447;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .valider:hover {
+            background: #ba4e5f;
+        }
+
+        .modal {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            width: 300px;
+        }
+
+        .modal-content h2 {
+            color: #9c3447;
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <div>
+        <a href="{{ url_for('accueil') }}">
+            <img src="/static/images/logo blanc.png" alt="Logo" style="height: 60px;">
+        </a>
+    </div>
+    <div>
+        <a href="{{ url_for('exercices') }}">Exercices</a>
+        <a href="{{ url_for('apprentissage') }}">Apprentissage</a>
+        {% if session.get('utilisateur_id') %}
+            <a href="{{ url_for('user') }}">Espace Membre</a>
+            <a href="{{ url_for('deconnexion') }}">Déconnexion</a>
+        {% else %}
+            <a href="{{ url_for('connexion') }}">Connexion</a>
+        {% endif %}
+    </div>
+</nav>
+
+<div class="main-content">
+    <div class="levels">
+        <h2>Choisir un niveau</h2>
+        <form method="GET" action="{{ url_for('exercices_trou') }}">
+            <button name="niveau" value="débutant">Débutant</button>
+            <button name="niveau" value="intermédiaire">Intermédiaire</button>
+            <button name="niveau" value="avancé">Avancé</button>
+        </form>
+    </div>
+
+    <div class="quiz-section">
+        {% if exercice %}
+            <h2 style="color: #9c3447;">Question {{ numero_question }} sur {{ total_questions }}</h2>
+            <div class="progress-bar">
+                <div class="progress" style="width: {{ progression }}%;"></div>
+            </div>
+
+            <form method="POST">
+                <p class="question">{{ exercice.question | safe }}</p>
+
+                <input type="text" name="reponse" placeholder="Votre réponse..." value="{{ reponse_donnee or '' }}"
+                    {% if reponse_donnee %}readonly{% endif %} required>
+
+                {% if reponse_donnee %}
+                    <p>
+                        {% if reponse_donnee.lower().strip() == exercice.reponse.lower().strip() %}
+                            ✅ Bonne réponse !
+                        {% else %}
+                            ❌ Mauvaise réponse. La bonne réponse était : <strong>{{ exercice.reponse }}</strong>
+                        {% endif %}
+                    </p>
+                    <button type="submit" class="valider">Suivant</button>
+                {% else %}
+                    <button type="submit" class="valider">Valider</button>
+                {% endif %}
+            </form>
+        {% elif not exercice and not afficher_modal_score %}
+            <h3 style="color: #0a0a0a; padding-top: 140px;">Veuillez choisir un niveau pour commencer les exercices.</h3>
+        {% endif %}
+    </div>
+</div>
+
+{% if afficher_modal_score %}
+<div class="modal">
+    <div class="modal-content">
+        <h2>🎉 Bravo !</h2>
+        <p>Vous avez terminé le niveau <strong>{{ niveau }}</strong>.</p>
+        <p>Score obtenu : <strong>{{ total_score }} / {{ total_possible }}</strong></p>
+        <a href="{{ url_for('exercices_trou') }}" class="valider" style="margin-top: 15px;">OK</a>
+    </div>
+</div>
+{% endif %}
+
+</body>
+</html>

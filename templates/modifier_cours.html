@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Modifier un cours</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <style>
+    body {
+        margin: 0;
+        font-family: 'Roboto', sans-serif;
+        background-image: url("/static/images/v882batch2-kul-12.jpg");
+        background-size: 100% auto;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        color: #fff;
+        text-align: center;
+        padding: 40px;
+    }
+
+    .container {
+      display: flex;
+      gap: 40px;
+      height: 550px;
+    }
+
+    .liste {
+      width: 30%;
+      text-align: center;
+      background-color: transparent;
+      padding: 80px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+      font-size: 18px;
+      overflow-y: auto;
+      border: 2px solid #9c3447;
+    }
+
+    .formulaire {
+      flex: 1;
+      background-color: transparent;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+      border: 2px solid #9c3447;
+    }
+
+    ul li {
+      margin: 10px 0;
+    }
+
+    ul li a {
+      color: #9c3447;
+      text-decoration: none;
+    }
+
+    form input[type="text"] {
+      width: 100%;
+      margin-top: 10px;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      background-color: transparent;
+      font-size: 18px;
+      color: #9c3447;
+    }
+
+    #editable-content {
+      margin-top: 10px;
+      height: 350px;
+      width: 100%;
+      padding: 15px;
+      background: transparent;
+      color: #333;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      overflow-y: auto;
+      font-size: 17px;
+    }
+
+    button {
+      background-color: #9c3447;
+      color: white;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 8px;
+      margin-top: 20px;
+      cursor: pointer;
+    }
+
+.popup-success {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #fafafa;
+  color:#9c3447;
+  border: 2px solid #9c3447;
+  border-radius: 12px;
+  padding: 20px 30px;
+  padding-top: 120px;
+  font-size: 18px;
+  font-weight: bold;
+  height: 100px;
+  z-index: 9999;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+  animation: fadeIn 0.5s ease-in-out;
+  text-align: center;
+  min-width: 300px;
+  max-width: 80%;
+}
+
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  color: #888;
+  font-size: 24px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.close-btn:hover {
+  color: #555;
+}
+
+.icon-flash {
+  position: absolute;
+  top: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 60px;
+  color: #9c3447;
+}
+
+.text-flash {
+  margin-top: 10px;
+  display: block;
+}
+
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translate(-50%, -60%); }
+  to { opacity: 1; transform: translate(-50%, -50%); }
+}
+
+
+
+
+  </style>
+</head>
+<body>
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+        <div class="popup-success" id="popup-message">
+        <span class="close-btn" onclick="document.getElementById('popup-message').style.display='none'">&times;</span>
+        <i class="fas fa-check-circle icon-flash"></i>
+        {% for message in messages %}
+            <span class="text-flash">{{ message }}</span>
+        {% endfor %}
+        </div>
+    {% endif %}
+    {% endwith %}
+
+
+  <h1 style="color: #9c3447;">Modifier un cours</h1>
+
+  <div class="container">
+    <div class="liste">
+      <h3 style="background-color: #9c3447; font-size: 25px;">Liste des cours</h3>
+      <ul>
+        {% for c in cours_list %}
+          <li><a href="{{ url_for('modifier_cours', id=c.id) }}">{{ c.titre }}</a></li>
+        {% endfor %}
+      </ul>
+      <a href="{{ url_for('professeur') }}" style="text-decoration: none;">
+        <button type="button" style="margin-top: 40px;">Retour</button>
+      </a>
+    </div>
+
+    <div class="formulaire">
+      {% if cours %}
+        <form method="POST">
+            <input type="hidden" name="id" value="{{ cours.id }}">  <!-- ✅ Ce champ est obligatoire -->
+
+            <input type="text" name="titre" value="{{ cours.titre }}" required>
+
+            <div contenteditable="true" id="editable-content" style="border:1px solid #ccc; padding:10px; color: #000000; font-size: 17px;">
+                {{ cours.contenu | safe }}
+            </div>
+
+            <input type="hidden" name="contenu" id="hidden-content">
+
+            <button type="submit" onclick="submitContent()">Enregistrer</button>
+
+           
+        </form>
+
+
+        
+      {% else %}
+        <p style="color: #9c3447; font-size: 20px; text-align: center; padding-top: 150px;">
+          Sélectionnez un cours à gauche pour le modifier.
+        </p>
+      {% endif %}
+    </div>
+  </div>
+</body>
+</html>

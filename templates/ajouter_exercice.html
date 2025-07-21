@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Ajouter un exercice</title>
+  <style>
+    /* Animations */
+@keyframes fadeInUp {
+    0% {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes logoFadeRotate {
+    0% {
+        opacity: 0;
+        transform: rotate(-20deg) scale(0.8);
+    }
+    100% {
+        opacity: 1;
+        transform: rotate(0deg) scale(1);
+    }
+}
+
+@keyframes backgroundZoom {
+    0% {
+        background-size: 100% auto;
+    }
+    50% {
+        background-size: 105% auto;
+    }
+    100% {
+        background-size: 100% auto;
+    }
+}
+    body {
+      margin: 0;
+    font-family: 'Roboto', sans-serif;
+    background-image: url("/static/images/v882batch2-kul-12.jpg");
+    background-size: 100% auto;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    color: #fff;
+    text-align: center;
+    animation: backgroundZoom 20s ease-in-out infinite;
+    }
+
+    form {
+      max-width: 700px;
+      margin: auto;
+      background-color: transparent;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+      border: 2px solid #9c3447;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+      color: #9c3447;
+    }
+
+    input[type="text"],
+    textarea,
+    select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 17px;
+    }
+
+    button {
+      margin-top: 20px;
+      background-color: #9c3447;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    button:hover {
+      background-color: #7a2a37;
+    }
+
+    .hint {
+      font-size: 12px;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+
+  <h1 style="text-align: center; color: #9c3447;">Ajouter un exercice</h1>
+
+  <form method="POST" action="{{ url_for('ajouter_exercice') }}">
+    <label for="titre">Titre de l'exercice :</label>
+    <input type="text" name="titre" required>
+
+    <label for="type">Type d'exercice :</label>
+    <select name="type" required>
+      <option value="qcm">QCM</option>
+      <option value="saisie">Saisie</option>
+      <option value="trou">Texte à trou</option>
+      <option value="ordre">Mots en ordre</option>
+    </select>
+
+    <label for="niveau">Niveau :</label>
+    <select name="niveau" required>
+      <option value="débutant">Débutant</option>
+      <option value="intermédiaire">Intermédiaire</option>
+      <option value="avancé">Avancé</option>
+    </select>
+
+    <label for="question">Question :</label>
+    <textarea name="question" rows="4" required></textarea>
+
+    <label for="choix">Choix (si QCM, séparés par des points-virgules ;) :</label>
+    <textarea name="choix" rows="2" placeholder="ex : réponse A ; réponse B ; réponse C"></textarea>
+
+    <label for="reponse">Réponse correcte :</label>
+    <input type="text" name="reponse" required>
+
+    <button type="submit">Ajouter l'exercice</button>
+
+    <div style="margin-top: 0px;">
+        <a href="{{ url_for('modifier_exercice', id=1) }}" style="text-decoration: none;">
+            <button type="button" style="background-color: #9c3447; color: white; border: none; border-radius: 8px; cursor: pointer;margin-right: 400px; font-weight: bold;">
+            Modifier un exercice
+            </button>
+        </a>
+
+  
+
+        <a href="{{ url_for('professeur') }}" style="text-decoration: none; margin-left: 20px;">
+            <button type="button" style="background-color: #9c3447; color: white; border: none;  border-radius: 8px; cursor: pointer;font-weight: bold;">
+            Retour
+            </button>
+        </a>
+    </div>
+
+    
+
+  </form>
+  
+
+</body>
+</html>

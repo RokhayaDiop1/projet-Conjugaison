@@ -29,6 +29,15 @@ class Utilisateur(db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     mot_de_passe = db.Column(db.String(255), nullable=False)
     role = db.Column(db.String(20), default='user')
+    bloque = db.Column(db.Boolean, default=False)
+
+
+class Connexion(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    utilisateur_id = db.Column(db.Integer, db.ForeignKey('utilisateur.id'))
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+
+    utilisateur = db.relationship('Utilisateur', backref='connexions')
 
 
 
@@ -56,3 +65,28 @@ class Cours(db.Model):
 
     def __repr__(self):
         return f"<Cours {self.titre}>"
+    
+
+class Exercice(db.Model):
+    __tablename__ = 'exercices'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    titre = db.Column(db.String(255))  # ➕ Nouveau champ
+    type = db.Column(db.String(50))  # qcm, saisie, trou, ordre, etc.
+    question = db.Column(db.Text)
+    reponse = db.Column(db.Text)
+    choix = db.Column(db.Text)  # Pour QCM ou options, séparés par ;
+    niveau = db.Column(db.String(50))  # débutant, intermédiaire, avancé
+
+
+class Resultat(db.Model):
+    __tablename__ = 'resultats'
+
+    id = db.Column(db.Integer, primary_key=True)
+    exercice_id = db.Column(db.Integer, db.ForeignKey('exercices.id'), nullable=False)
+    utilisateur_id = db.Column(db.Integer, db.ForeignKey('utilisateur.id'), nullable=True)  # optionnel
+    reponse_donnee = db.Column(db.String(255))
+    score = db.Column(db.Integer)
+    date_reponse = db.Column(db.DateTime, default=datetime.utcnow)
+
+    exercice = db.relationship('Exercice', backref='resultats')

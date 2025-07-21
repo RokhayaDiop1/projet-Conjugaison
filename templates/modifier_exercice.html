@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Modifier un exercice</title>
+  <style>
+    /* Animations */
+@keyframes fadeInUp {
+    0% {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes logoFadeRotate {
+    0% {
+        opacity: 0;
+        transform: rotate(-20deg) scale(0.8);
+    }
+    100% {
+        opacity: 1;
+        transform: rotate(0deg) scale(1);
+    }
+}
+
+@keyframes backgroundZoom {
+    0% {
+        background-size: 100% auto;
+    }
+    50% {
+        background-size: 105% auto;
+    }
+    100% {
+        background-size: 100% auto;
+    }
+}
+    body {
+        margin: 40px;
+        font-family: 'Roboto', sans-serif;
+        background-image: url("/static/images/v882batch2-kul-12.jpg");
+        background-size: 100% auto;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        color: #fff;
+        text-align: center;
+        animation: backgroundZoom 20s ease-in-out infinite;
+    }
+
+    .container {
+      display: flex;
+      gap: 40px;
+      background-color: transparent;
+    }
+
+    .liste {
+      width: 30%;
+      background: transparent;
+      padding: 20px;
+      border-radius: 10px;
+      border: 2px solid #9c3447;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+    }
+
+    .liste h3 {
+      color: #9c3447;
+    }
+
+    .liste ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .liste li {
+      margin: 10px 0;
+    }
+
+    .liste a {
+      text-decoration: none;
+      color: #9c3447;
+      font-weight: bold;
+    }
+
+    .formulaire {
+      flex: 1;
+      background: #fff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      background-color: transparent;
+      border: 2px solid #9c3447;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      color: #9c3447;
+      font-weight: bold;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 17px;
+    }
+
+    button {
+      margin-top: 20px;
+      background-color: #9c3447;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+
+  </style>
+</head>
+<body>
+
+<h1 style="text-align:center; color:#9c3447;">Modifier un exercice</h1>
+
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <div id="modal-flash" class="modal-overlay">
+      <div class="modal-box">
+        <span class="close-modal" onclick="closeModal()">&times;</span>
+        <i class="fas fa-check-circle icon"></i>
+        {% for message in messages %}
+          <p>{{ message }}</p>
+        {% endfor %}
+      </div>
+    </div>
+    <script>
+      function closeModal() {
+        document.getElementById('modal-flash').style.display = 'none';
+      }
+    </script>
+  {% endif %}
+{% endwith %}
+
+
+<div class="container">
+  <div class="liste">
+    <h3 style="color: black; font-size: 22px;">Liste des exercices</h3>
+    <ul>
+      {% for ex in exercices %}
+        <li>
+          <a href="{{ url_for('modifier_exercice', id=ex.id) }}">{{ ex.titre }}</a>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  <div class="formulaire">
+    {% if exercice %}
+<form method="POST">
+  <input type="text" name="titre" value="{{ exercice.titre }}" required>
+
+  <label for="type">Type :</label>
+  <select name="type">
+    <option value="qcm" {% if exercice.type == 'qcm' %}selected{% endif %}>QCM</option>
+    <option value="saisie" {% if exercice.type == 'saisie' %}selected{% endif %}>Saisie</option>
+    <option value="trou" {% if exercice.type == 'trou' %}selected{% endif %}>Texte à trou</option>
+    <option value="ordre" {% if exercice.type == 'ordre' %}selected{% endif %}>Mots en ordre</option>
+  </select>
+
+  <label for="niveau">Niveau :</label>
+  <select name="niveau">
+    <option value="débutant" {% if exercice.niveau == 'débutant' %}selected{% endif %}>Débutant</option>
+    <option value="intermédiaire" {% if exercice.niveau == 'intermédiaire' %}selected{% endif %}>Intermédiaire</option>
+    <option value="avancé" {% if exercice.niveau == 'avancé' %}selected{% endif %}>Avancé</option>
+  </select>
+
+  <label for="question">Question :</label>
+  <textarea name="question">{{ exercice.question }}</textarea>
+
+  <label for="choix">Choix :</label>
+  <textarea name="choix">{{ exercice.choix }}</textarea>
+
+  <label for="reponse">Réponse :</label>
+  <input type="text" name="reponse" value="{{ exercice.reponse }}">
+
+  <button type="submit">Enregistrer les modifications</button>
+</form>
+
+<!-- BOUTON SUPPRIMER -->
+{% if exercice %}
+  <form method="POST" action="{{ url_for('supprimer_exercice', id=exercice.id) }}" style="display:inline;">
+    <button type="submit"
+            style="background-color: #dc3545; color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin-left: 10px;">
+      Supprimer
+    </button>
+  </form>
+{% endif %}
+
+
+
+
+
+<!-- Bouton RETOUR -->
+<a href="{{ url_for('professeur') }}" style="text-decoration: none;">
+  <button type="button" style="margin-left: 10px; margin-left: 600px;" >
+    Retour
+  </button>
+</a>
+{% endif %}
+  </div>
+</div>
+
+
+
+</body>
+</html>

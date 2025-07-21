@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Ajouter un cours</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <style>
+    /* Animations */
+@keyframes fadeInUp {
+    0% {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes logoFadeRotate {
+    0% {
+        opacity: 0;
+        transform: rotate(-20deg) scale(0.8);
+    }
+    100% {
+        opacity: 1;
+        transform: rotate(0deg) scale(1);
+    }
+}
+
+@keyframes backgroundZoom {
+    0% {
+        background-size: 100% auto;
+    }
+    50% {
+        background-size: 105% auto;
+    }
+    100% {
+        background-size: 100% auto;
+    }
+}
+    body {
+      margin: 0;
+      font-family: 'Roboto', sans-serif;
+      background-image: url("/static/images/v882batch2-kul-12.jpg");
+      background-size: 100% auto;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      color: #fff;
+      text-align: center;
+      animation: backgroundZoom 20s ease-in-out infinite;
+      padding: 60px;
+      
+    }
+
+    form {
+      max-width: 700px;
+      margin: auto;
+      background-color:transparent;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+      border: 2px solid #9c3447;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+      color: #9c3447;
+    }
+
+    input[type="text"],
+    textarea {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 17px;
+    }
+
+    button {
+      margin-top: 20px;
+      background-color: #9c3447;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #7a2a37;
+    }
+
+    .popup-success {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #fafafa;
+  color:#9c3447;
+  border: 2px solid #9c3447;
+  border-radius: 12px;
+  padding: 20px 30px;
+  padding-top: 120px;
+  font-size: 18px;
+  font-weight: bold;
+  height: 100px;
+  z-index: 9999;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+  animation: fadeIn 0.5s ease-in-out;
+  text-align: center;
+  min-width: 300px;
+  max-width: 80%;
+}
+
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  color: #888;
+  font-size: 24px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.close-btn:hover {
+  color: #555;
+}
+
+.icon-flash {
+  position: absolute;
+  top: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 60px;
+  color: #9c3447;
+}
+
+.text-flash {
+  margin-top: 10px;
+  display: block;
+}
+
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translate(-50%, -60%); }
+  to { opacity: 1; transform: translate(-50%, -50%); }
+}
+
+  </style>
+</head>
+<body>
+  
+
+  <h1 style="color: #9c3447; text-align: center;">Ajouter un nouveau cours</h1>
+
+<form method="POST" action="{{ url_for('ajouter_cours') }}">
+  <label for="titre">Titre :</label>
+  <input type="text" name="titre" required>
+
+  <label for="contenu">Contenu du cours :</label>
+  <textarea name="contenu" rows="15" required></textarea>
+
+  <button type="submit">Ajouter le cours</button>
+  <a href="{{ url_for('modifier_cours') }}" style="text-decoration: none;">
+  <button type="button" style="padding: 10px 20px; background-color:#9c3447; color: white; border: none; border-radius: 8px; margin-left: 365px;">
+    Modifier un cours existant
+  </button>
+</a>
+
+</form>
+
+
+
+</body>
+</html>
