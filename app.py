@@ -389,8 +389,6 @@ verbes_3e_groupe_ir = [
 
 
 
-
-
 def verbe_est_un_verbe_wiktionnaire(verbe):
     url = f"https://fr.wiktionary.org/wiki/{verbe}"
     try:
