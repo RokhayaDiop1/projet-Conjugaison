@@ -182,7 +182,7 @@ nav a:hover {
     <div>
       {% if session.get('utilisateur_id') %}
       <a href="{{ url_for('accueil') }}"><i class="fa-solid fa-house"></i>Accueil</a>
-        <a href="{{ url_for('user') }}">Espace Membre</a>
+        <a href="{{ url_for('user') }}">Espace Apprenantt</a>
         <a href="{{ url_for('deconnexion') }}">Déconnexion</a>
       {% else %}
       <a href="{{ url_for('accueil') }}"><i class="fa-solid fa-house"></i>Accueil</a>

@@ -163,7 +163,6 @@
         <a href="{{ url_for('exercices') }}">Exercices</a>
         <a href="{{ url_for('apprentissage') }}">Apprentissage</a>
         {% if session.get('utilisateur_id') %}
-            <a href="{{ url_for('user') }}">Espace Membre</a>
             <a href="{{ url_for('deconnexion') }}">Déconnexion</a>
         {% else %}
             <a href="{{ url_for('connexion') }}">Connexion</a>

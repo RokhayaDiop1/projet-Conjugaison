@@ -166,7 +166,7 @@
     <div>
         {% if session.get('utilisateur_id') %}
         <a href="{{ url_for('exercices') }}" style="margin-left: 20px; color: #f8f3f2; font-weight: bold; text-decoration: none;">Exercices</a>
-            <a href="{{ url_for('user') }}">Espace Membre</a>
+            <a href="{{ url_for('user') }}">Espace Apprenant</a>
             <a href="{{ url_for('deconnexion') }}">Déconnexion</a>
         {% else %}
         <a href="{{ url_for('exercices') }}" style="margin-left: 20px; color: #f8f3f2; font-weight: bold; text-decoration: none;">Exercices</a>

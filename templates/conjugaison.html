@@ -228,23 +228,18 @@
   display: inline-block;
 }
 
-.definition-verbe {
-  background-color: rgba(255, 255, 255, 0.9);
-  border-left: 5px solid #9c3447;
-  padding: 15px;
-  margin: 20px 0;
-  font-style: italic;
-}
 .definition {
-    background-color: rgba(255, 255, 255, 0.9);
-    padding: 15px;
-    margin-top: 10px;
-    border-left: 4px solid #9c3447;
-    border-radius: 8px;
-    font-style: italic;
-    color: #333;
-    max-width: 100%;
-  }
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 55px;
+  margin-top: 10px;
+  border: 4px solid #9c3447;
+  border-radius: 8px;
+  font-weight: bold;
+  font-style: italic;
+  color: #c50303;
+  width: 300px;
+}
+
 
 
   </style>
@@ -256,6 +251,9 @@
       <a href="{{ url_for('accueil') }}" style="text-decoration: none;">
         <img src="/static/images/logo2_copie-removebg-preview.png" alt="" width="300px" style="height: 150px;">
       </a>
+
+     
+
     </div>
     
 
@@ -267,6 +265,8 @@
       <div class="info-grammaire">
         <p><strong>Groupe :</strong> Verbe du {{ groupe }}</p>
         <p><strong>Verbe pronominal :</strong> {{ pronominal }}</p>
+      
+
 
       </div>
 
@@ -319,7 +319,14 @@
     </div>
 
     {% elif verbe %}
-      <p style="color: red;">Aucune conjugaison trouvée pour "<strong>{{ verbe }}</strong>"</p>
+      {% if definition %}
+        <div class="definition">
+          {{ definition }}
+        </div>
+      {% else %}
+        <p style="color: red;">Aucune conjugaison trouvée pour "<strong>{{ verbe }}</strong>"</p>
+    {% endif %}
+
     {% else %}
       <div style="text-align: center; margin-top: 30px;">
         <div class="intro-text">

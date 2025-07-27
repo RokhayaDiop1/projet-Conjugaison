@@ -129,21 +129,22 @@ nav a:hover {
       font-weight: bold;
     }
 
-    .progress-bar {
-      background-color: #eee;
-      border-radius: 20px;
-      height: 20px;
-      width: 100%;
-      margin-top: 10px;
-      overflow: hidden;
-    }
 
-    .progress {
-      background-color: #9c3447;
-      height: 100%;
-      width: {{ progression }}%;
-      transition: width 0.5s;
-    }
+.progress-bar {
+  background-color: #eee;
+  border-radius: 20px;
+  height: 20px;
+  width: 100%;
+  margin-top: 10px;
+  overflow: hidden;
+}
+.progress {
+  background-color: #9c3447;
+  height: 100%;
+  width: {{ progression }}%;
+  transition: width 0.5s;
+}
+
 
     .historique {
       margin-top: 30px;
@@ -167,27 +168,102 @@ nav a:hover {
  .modal {
   display: none;
   position: fixed;
-  z-index: 1000;
+  z-index: 9999;
   left: 0;
   top: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0,0,0,0.4);
+  background: rgba(0, 0, 0, 0.6);
   justify-content: center;
   align-items: center;
+  
 }
 
 .modal-content {
-  background-color: #fff;
-  color: #000;
-  padding: 25px;
-  border-radius: 10px;
-  width: 500px;
+  background: #fff;
+  color: #333;
+  padding: 30px 40px;
+  border-radius: 15px;
+  width: 600px;
   max-width: 90%;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-  animation: fadeInUp 0.4s ease;
-  text-align: center;
+  text-align: left;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+  animation: fadeIn 0.4s ease;
+  position: relative;
+  font-family: 'Roboto', sans-serif;
+  border: 6px solid #9c3447;
 }
+
+.modal-content h3 {
+  color: #9c3447;
+  margin-top: 0;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.modal-content label {
+  font-weight: bold;
+  color: #444;
+  margin-top: 15px;
+  display: block;
+}
+
+.modal-content select,
+.modal-content textarea {
+  width: 100%;
+  padding: 10px;
+  margin-top: 6px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 15px;
+}
+
+.modal-content button {
+  padding: 10px 20px;
+  background-color: #9c3447;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 10px;
+  font-weight: bold;
+}
+
+.modal-content button:hover {
+  background-color: #7a2a37;
+}
+
+.modal-content .fermer {
+  background-color: #ccc;
+  color: #000;
+  float: right;
+  margin-left: 10px;
+}
+
+.modal-content .fermer:hover {
+  background-color: #999;
+}
+
+#correctionRevision {
+  margin-top: 20px;
+  font-size: 16px;
+}
+
+#correctionRevision ul {
+  padding-left: 20px;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.valider:hover{
+  background: #9c3447;
+  color: white;
+}
+
 
   </style>
 </head>
@@ -217,13 +293,13 @@ nav a:hover {
     <p><strong>Total verbes consultés :</strong> {{ total_verbes }}</p>
     <p><strong>Niveau actuel :</strong> <span style="background:#9c3447; color:white; padding:4px 10px; border-radius:20px;">
   {{ utilisateur.niveau }}
-</span></p><br>
-    
+</span></p>
+<p><strong>Progression :</strong> {{ progression }}%</p>
 
-    <p><strong>Progression :</strong></p>
-    <div class="progress-bar">
-      <div class="progress"></div>
-    </div><br><br><br>
+<div class="progress-bar">
+  <div class="progress" style="width: {{ progression }}%;"></div>
+</div>
+
   </div>
 
   <div class="btns">
@@ -245,101 +321,119 @@ nav a:hover {
     </ul>
   </div>
   {% if historique|length > 0 %}
-  <div style="text-align: center; margin-top: 20px;">
- <button onclick="ouvrirModalRevision()" class="valider" style="margin-top: 20px;">Faire une révision</button>
-</div>
-
+  <div style="text-align:center; margin-top: 30px;">
+    <button onclick="ouvrirModalRevision()" class="valider" style="margin-top: 20px; padding: 10px;border: 3px solid #9c3447;border-radius: 15px; font-weight: bold;">Faire une révision</button>
+  </div>
 {% endif %}
+
 </div>
 
 
-<!-- ✅ MODAL DE REVISION -->
-<div id="revisionModal" class="modal" style="display:none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); justify-content: center; align-items: center; z-index: 9999;">
-  <div class="modal-content" style="background: white; padding: 30px; border-radius: 10px; width: 500px; text-align: center; position: relative;">
+
+<!-- Modal Révision -->
+<div id="modalRevision" class="modal">
+  <div class="modal-content">
+    <h3>Révision : conjuguez le verbe</h3>
     
-    <h2 style="color: #9c3447;">Révision de conjugaison</h2>
-    
-    <label for="verbeSelect"><strong>Choisir un verbe :</strong></label><br>
-    <select id="verbeSelect" style="padding: 8px; width: 100%; margin-bottom: 20px;">
-      {% for verbe, temps in temps_par_verbe.items() %}
+    <label for="verbeSelect">Choisir un verbe :</label>
+    <select id="verbeSelect">
+      {% for verbe in temps_par_verbe %}
         <option value="{{ verbe }}">{{ verbe }}</option>
       {% endfor %}
     </select>
 
-    <label for="tempsSelect"><strong>Choisir un temps :</strong></label><br>
-    <select id="tempsSelect" style="padding: 8px; width: 100%; margin-bottom: 20px;"></select>
+    <br><br>
+    <label for="tempsSelect">Choisir un temps :</label>
+    <select id="tempsSelect">
+      <!-- rempli dynamiquement -->
+    </select>
 
-    <form id="revisionForm" method="POST">
-      <label><strong>Ta conjugaison :</strong></label><br>
-      <textarea name="reponse" rows="8" style="width: 100%; margin-top: 10px;" required></textarea><br>
-      <button type="submit" class="valider" style="margin-top: 10px;">Vérifier</button>
-    </form>
+    <br><br>
+    <textarea id="reponseRevision" rows="6" style="width: 100%;">je 
+tu 
+il
+nous 
+vous 
+ils</textarea><br>
 
-    <div id="rev-feedback" style="margin-top: 15px;"></div>
 
-    <button onclick="fermerModalRevision()" style="margin-top: 20px; background:#9c3447; color:white; padding:6px 15px; border:none; border-radius:5px;">Fermer</button>
+    <button onclick="verifierConjugaison()">Vérifier</button>
+    <button onclick="fermerModalRevision()" class="fermer">Fermer</button>
+
+    <div id="correctionRevision" style="margin-top: 20px;"></div>
   </div>
 </div>
 
 
+
+
+
 <script>
-let tempsParVerbe = {{ temps_par_verbe | tojson }};
-let baseCorrection = {{ corrections_par_verbe_temps | tojson }};
+const tempsParVerbe = {{ temps_par_verbe|tojson }};
+const correctionsParVerbeTemps = {{ corrections_par_verbe_temps|tojson }};
 
-function ouvrirModalRevision() {
-  document.getElementById("revisionModal").style.display = "flex";
-  chargerTemps();
-}
-
-function chargerTemps() {
-  const verbe = document.getElementById("verbeSelect").value;
+// Quand l'utilisateur sélectionne un verbe
+document.getElementById("verbeSelect").addEventListener("change", function () {
+  const verbe = this.value;
   const tempsSelect = document.getElementById("tempsSelect");
-  tempsSelect.innerHTML = "";
+  tempsSelect.innerHTML = ""; // Réinitialise
 
-  const temps = tempsParVerbe[verbe] || [];
-  temps.forEach(t => {
-    const option = document.createElement("option");
-    option.value = t;
-    option.textContent = t;
-    tempsSelect.appendChild(option);
-  });
-}
-
-// ⚙️ Changer les temps quand on change de verbe
-document.getElementById("verbeSelect").addEventListener("change", chargerTemps);
-
-// ✅ Vérification de la conjugaison
-document.getElementById("revisionForm").addEventListener("submit", function(e) {
-  e.preventDefault();
-  const verbe = document.getElementById("verbeSelect").value;
-  const temps = document.getElementById("tempsSelect").value;
-  const reponse = document.querySelector('textarea[name="reponse"]').value.trim().toLowerCase();
-
-  const bonne_conj = (baseCorrection[verbe] && baseCorrection[verbe][temps]) || "";
-
-  if (!bonne_conj) {
-    document.getElementById("rev-feedback").innerHTML = "Correction non disponible.";
-    return;
-  }
-
-  const user = reponse.replace(/\s+/g, '');
-  const correct = bonne_conj.replace(/\s+/g, '').toLowerCase();
-
-  if (user === correct) {
-    document.getElementById("rev-feedback").innerHTML = `<span style="color:green;">✅ Bonne réponse !</span>`;
-  } else {
-    document.getElementById("rev-feedback").innerHTML = `
-      <span style="color:red;">❌ Mauvaise réponse.</span><br>
-      <strong>Correction :</strong><br>
-      <pre style="text-align:left; background:#f0f0f0; padding:10px;">${bonne_conj}</pre>
-    `;
+  if (verbe && tempsParVerbe[verbe]) {
+    tempsParVerbe[verbe].forEach(([mode, temps]) => {
+      const opt = document.createElement("option");
+      opt.value = mode + "||" + temps;
+      opt.textContent = mode + " - " + temps;
+      tempsSelect.appendChild(opt);
+    });
   }
 });
 
+// Vérification de la réponse
+function verifierConjugaison() {
+  const verbe = document.getElementById("verbeSelect").value;
+  const [mode, temps] = document.getElementById("tempsSelect").value.split("||");
+  const reponse = document.getElementById("reponseRevision").value.trim().toLowerCase();
+  const correctionDiv = document.getElementById("correctionRevision");
+
+ const bonneCorrection = correctionsParVerbeTemps[verbe][mode + "||" + temps];
+
+
+  if (!bonneCorrection) {
+    correctionDiv.innerHTML = "<p style='color:red;'>Correction introuvable dans la base.</p>";
+    return;
+  }
+
+  // On affiche la bonne conjugaison complète (ligne par ligne)
+  const lignes = bonneCorrection.split("\n").map(l => l.trim()).filter(l => l);
+  const correctionHTML = lignes.map(l => `<li>${l}</li>`).join("");
+
+  correctionDiv.innerHTML = `
+    <h4>Correction :</h4>
+    <ul style="text-align:left;">${correctionHTML}</ul>
+  `;
+
+  // Optionnel : comparaison exacte (si besoin)
+  const reponseLignes = reponse.split("\n").map(l => l.trim());
+  const bonneLignes = lignes.map(l => l.toLowerCase());
+
+  if (JSON.stringify(reponseLignes) === JSON.stringify(bonneLignes)) {
+    correctionDiv.innerHTML += `<p style="color:green;"><strong>✅ Très bonne reponse</strong></p>`;
+  } else {
+    correctionDiv.innerHTML += `<p style="color:red;"><strong>❌mauvaise reponse.</strong></p>`;
+  }
+}
+
+function ouvrirModalRevision() {
+  document.getElementById("modalRevision").style.display = "flex";
+  document.getElementById("verbeSelect").dispatchEvent(new Event("change"));  // Remplir temps
+}
+
 function fermerModalRevision() {
-  document.getElementById("revisionModal").style.display = "none";
+  document.getElementById("modalRevision").style.display = "none";
 }
 </script>
+
+
 
 
 

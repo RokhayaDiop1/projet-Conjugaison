@@ -27,6 +27,11 @@ import markdown
 import pdfkit
 from datetime import datetime, timedelta
 import json
+from flask import request, render_template, session
+from datetime import datetime
+from verbecc import Conjugator
+from bs4 import BeautifulSoup
+import requests
 
 
 app = Flask(__name__)
@@ -51,75 +56,46 @@ def accueil():
 
 
 
-# def get_definition(verbe):
-#     url = f"https://fr.wiktionary.org/wiki/{verbe}"
-#     try:
-#         response = requests.get(url, timeout=5)
-#         if response.status_code != 200:
-#             return "Définition non disponible."
-
-#         soup = BeautifulSoup(response.text, "html.parser")
-
-#         # Trouve la section Français
-#         francais = soup.find('span', {'id': 'Français'})
-#         if not francais:
-#             return "Définition non trouvée."
-
-#         h2 = francais.find_parent("h2")
-
-#         # Cherche les éléments suivants jusqu'à la prochaine section
-#         current = h2.find_next_sibling()
-#         while current:
-#             if current.name == 'h2':  # Fin de la section Français
-#                 break
-#             if current.name == 'ol':
-#                 li = current.find("li")
-#                 if li:
-#                     return li.text.strip()
-#             current = current.find_next_sibling()
-
-#     except Exception as e:
-#         print("Erreur BeautifulSoup définition :", e)
-#         return "Erreur lors de la récupération de la définition."
-
-#     return "Définition non trouvée."
-
-
 
 
 
 @app.route('/connexion', methods=['GET', 'POST'])
 def connexion():
     if request.method == 'POST':
-        email = request.form['email']
-        mot_de_passe = request.form['mot_de_passe']
+        email = request.form.get('email')
+        mot_de_passe = request.form.get('mot_de_passe')
+        
         utilisateur = Utilisateur.query.filter_by(email=email).first()
 
         if utilisateur and check_password_hash(utilisateur.mot_de_passe, mot_de_passe):
+            # ✅ Stocker l'ID dans la session
             session['utilisateur_id'] = utilisateur.id
-            flash("Connexion réussie.")
 
-            # Après la vérification du mot de passe :
-            connexion = Connexion(utilisateur_id=utilisateur.id, date_connexion=datetime.utcnow())
-            db.session.add(connexion)
+            # ✅ Enregistrer la connexion
+            nouvelle_connexion = Connexion(
+                utilisateur_id=utilisateur.id,
+                date_connexion=datetime.utcnow()
+            )
+            db.session.add(nouvelle_connexion)
             db.session.commit()
 
+            flash("Connexion réussie.")
 
-            # Redirection selon le rôle
+            # ✅ Redirection selon le rôle
             if utilisateur.role == 'admin':
                 return redirect(url_for('admin'))
             elif utilisateur.role == 'professeur':
                 return redirect(url_for('professeur'))
             else:
                 return redirect(url_for('user'))
-
+        
         else:
-            flash("Identifiants incorrects.")
-            
-
-            
+            flash("Email ou mot de passe incorrect.")
 
     return render_template('connexion.html')
+
+
+
 
 
 @app.route('/inscription', methods=['GET', 'POST'])
@@ -408,6 +384,61 @@ verbes_3e_groupe_ir = [
     "s'offrir", "se servir", "s'endormir", "pouvoir","voir", "vouloir", "avoir"
 ]
 
+
+
+
+
+
+
+
+def verbe_est_un_verbe_wiktionnaire(verbe):
+    url = f"https://fr.wiktionary.org/wiki/{verbe}"
+    try:
+        response = requests.get(url, timeout=5)
+        if response.status_code != 200:
+            return False
+        soup = BeautifulSoup(response.text, "html.parser")
+        fr_section = soup.find("span", id="Français")
+        if not fr_section:
+            return False
+        current = fr_section.find_parent()
+        while current and current.name != "h2":
+            current = current.find_next_sibling()
+        while current:
+            if current.name in ["h3", "h4"] and "Verbe" in current.text:
+                return True
+            current = current.find_next_sibling()
+        return False
+    except:
+        return False
+
+
+
+
+def get_definition_depuis_wiktionnaire(verbe):
+    try:
+        url = f"https://fr.wiktionary.org/wiki/{verbe}"
+        response = requests.get(url)
+        if response.status_code != 200:
+            return None
+
+        soup = BeautifulSoup(response.text, 'html.parser')
+        section_fr = soup.find('span', id='Français')
+        if not section_fr:
+            return None
+
+        ol = section_fr.find_next('ol')
+        if ol:
+            return ol.find('li').get_text()
+        return None
+    except Exception as e:
+        print(f"Erreur de définition : {e}")
+        return None
+
+
+
+
+
 @app.route('/conjugaison', methods=['GET', 'POST'])
 def conjugaison():
     verbe = ''
@@ -433,13 +464,25 @@ def conjugaison():
                 groupe = resultats[0].groupe
                 pronominal = resultats[0].pronominal
             else:
+                # Vérifier si c’est un vrai verbe
+                definition = get_definition_depuis_wiktionnaire(verbe)
+                if not definition:
+                    definition = f"⚠️ Le mot « {verbe} » n’est pas reconnu comme un verbe."
+                    return render_template("conjugaison.html",
+                                           verbe=verbe,
+                                           conjugaisons={},
+                                           groupe="Inconnu",
+                                           pronominal="non",
+                                           definition=definition)
+
+                # Si c'est un vrai verbe, on le conjugue avec verbecc
                 conj = Conjugator(lang='fr')
                 result = conj.conjugate(verbe)
                 moods = result.get("moods", {})
 
                 if verbe.endswith("er") and verbe != "aller":
                     groupe = "1er"
-                elif verbe.endswith("ir") and verbe not in verbes_3e_groupe_ir:
+                elif verbe.endswith("ir") and verbe not in ['courir', 'mourir', 'fuir']:  # à adapter
                     groupe = "2e"
                 else:
                     groupe = "3e"
@@ -453,6 +496,7 @@ def conjugaison():
                         mode = Mode(nom=mode_nom)
                         db.session.add(mode)
                         db.session.commit()
+
                     for temps_nom, formes in temps_dict.items():
                         existe = Conjugaison.query.filter_by(
                             verbe=verbe, temps=temps_nom, mode_id=mode.id
@@ -467,46 +511,45 @@ def conjugaison():
                                 mode_id=mode.id
                             )
                             db.session.add(nouv)
-                            if mode_nom not in conjugaisons:
-                                conjugaisons[mode_nom] = {}
-                            conjugaisons[mode_nom][temps_nom] = formes
+                        if mode_nom not in conjugaisons:
+                            conjugaisons[mode_nom] = {}
+                        conjugaisons[mode_nom][temps_nom] = formes
                 db.session.commit()
 
-            # ✅ HISTORIQUE (doit être EN DEHORS du `if resultats` et `else`)
-            utilisateur_id = session.get('utilisateur_id')
-            if utilisateur_id:
-                mode_inf = Mode.query.filter_by(nom="Infinitif").first()
-                if mode_inf:
-                    infinitif = Conjugaison.query.filter_by(
-                        verbe=verbe,
-                        mode_id=mode_inf.id,
-                        temps="infinitif-présent"
-                    ).first()
-                    if infinitif:
-                        existe = Historique.query.filter_by(
-                            utilisateur_id=utilisateur_id,
-                            conjugaison_id=infinitif.id
+                # Historique
+                utilisateur_id = session.get('utilisateur_id')
+                if utilisateur_id:
+                    mode_inf = Mode.query.filter_by(nom="Infinitif").first()
+                    if mode_inf:
+                        infinitif = Conjugaison.query.filter_by(
+                            verbe=verbe,
+                            mode_id=mode_inf.id,
+                            temps="infinitif-présent"
                         ).first()
-                        if not existe:
-                            historique = Historique(
+                        if infinitif:
+                            existe = Historique.query.filter_by(
                                 utilisateur_id=utilisateur_id,
-                                conjugaison_id=infinitif.id,
-                                date_consultation=datetime.now()
-                            )
-                            db.session.add(historique)
-                            db.session.commit()
-                            print("✅ Historique ajouté")
-                    
+                                conjugaison_id=infinitif.id
+                            ).first()
+                            if not existe:
+                                historique = Historique(
+                                    utilisateur_id=utilisateur_id,
+                                    conjugaison_id=infinitif.id,
+                                    date_consultation=datetime.now()
+                                )
+                                db.session.add(historique)
+                                db.session.commit()
 
         except Exception as e:
             print("Erreur globale :", e)
-            definition = "Erreur lors de la récupération."
+            definition = "❌ Erreur lors de la récupération de la conjugaison."
 
     return render_template("conjugaison.html",
                            verbe=verbe,
                            conjugaisons=conjugaisons,
                            groupe=f"{groupe} groupe" if groupe in ["1er", "2e", "3e"] else groupe,
-                           pronominal="oui" if pronominal else "non")
+                           pronominal="oui" if pronominal else "non",
+                           definition=definition)
 
 
 
@@ -518,13 +561,21 @@ def espace():
 
     return "Bienvenue dans l'espace membre"
 
-def calculer_niveau(total_points):
-    if total_points < 50:
-        return "Débutant"
-    elif total_points < 100:
-        return "Intermédiaire"
+def calculer_niveau_et_progression(total_points):
+    # Progression sur 100 points max
+    progression = min(int(total_points), 100)
+
+    if progression < 30:
+        niveau = "Débutant"
+    elif progression < 60:
+        niveau = "Intermédiaire"
     else:
-        return "Avancé"
+        niveau = "Avancé"
+
+    return niveau, progression
+
+    
+
 
 @app.route('/user')
 def user():
@@ -534,64 +585,54 @@ def user():
 
     utilisateur = Utilisateur.query.get(session['utilisateur_id'])
 
-    # ➤ Derniers verbes consultés (10 derniers)
-    historique = (
+    # 🔸 Récupérer les historiques
+    historiques = (
         db.session.query(Historique, Conjugaison)
         .join(Conjugaison, Historique.conjugaison_id == Conjugaison.id)
+        .join(Mode, Conjugaison.mode_id == Mode.id)
         .filter(Historique.utilisateur_id == utilisateur.id)
         .order_by(Historique.date_consultation.desc())
         .limit(10)
         .all()
     )
+    total_verbes = len(historiques)
+    verbes_historiques = list({conj.verbe for _, conj in historiques})
 
-    total_verbes = (
-        db.session.query(Historique.conjugaison_id)
-        .filter_by(utilisateur_id=utilisateur.id)
-        .distinct()
-        .count()
+    # 🔹 Conjugaisons et corrections
+    conjugaisons = (
+        db.session.query(Conjugaison, Mode)
+        .join(Mode, Conjugaison.mode_id == Mode.id)
+        .filter(Conjugaison.verbe.in_(verbes_historiques))
+        .all()
     )
 
-    # ➤ Générer les temps disponibles pour chaque verbe
-    temps_par_verbe = {}
     corrections_par_verbe_temps = {}
+    temps_par_verbe = {}
 
-    for hist, conj in historique:
-        verbe = conj.verbe
-        temps = conj.temps
-        if verbe not in temps_par_verbe:
-            temps_par_verbe[verbe] = []
-        if temps not in temps_par_verbe[verbe]:
-            temps_par_verbe[verbe].append(temps)
+    for conj, mode in conjugaisons:
+        key = f"{mode.nom}||{conj.temps}"
+        if conj.verbe not in corrections_par_verbe_temps:
+            corrections_par_verbe_temps[conj.verbe] = {}
+            temps_par_verbe[conj.verbe] = []
+        corrections_par_verbe_temps[conj.verbe][key] = conj.conjugaisons
+        temps_par_verbe[conj.verbe].append((mode.nom, conj.temps))
 
-        # Ajout de la conjugaison complète pour vérification
-        if verbe not in corrections_par_verbe_temps:
-            corrections_par_verbe_temps[verbe] = {}
-        corrections_par_verbe_temps[verbe][temps] = conj.conjugaisons
+    # 🔸 Progression et niveau depuis la table Resultat
+    total_points = db.session.query(db.func.sum(Resultat.score)).filter_by(utilisateur_id=utilisateur.id).scalar() or 0
+    niveau, progression = calculer_niveau_et_progression(total_points)
+    utilisateur.niveau = niveau
+
 
     return render_template(
         'user.html',
         utilisateur=utilisateur,
-        historique=historique,
+        historique=historiques,
         total_verbes=total_verbes,
+        progression=progression,
+        corrections_par_verbe_temps=corrections_par_verbe_temps,
         temps_par_verbe=temps_par_verbe,
-        corrections_par_verbe_temps=corrections_par_verbe_temps
+        verbes_historiques=verbes_historiques
     )
-
-
-
-
-
-
-@app.route('/verif_revision')
-def verif_revision():
-    verbe = request.args.get("verbe")
-    temps = request.args.get("temps")
-
-    conj = Conjugaison.query.filter_by(verbe=verbe, temps=temps).first()
-    conjugaisons = conj.conjugaisons.strip().split("\n") if conj else []
-    return jsonify({'bonne': conjugaisons})
-
-
 
 
 @app.route('/professeur')
@@ -619,7 +660,7 @@ def professeur():
                        total_exercices=total_exercices)
 
 
-    
+
 
 
 
