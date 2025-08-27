@@ -334,7 +334,7 @@
         </div>
         <br><br><br>
         <div class="verbes-populaires" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 12px;">
-          {% for v in ['être', 'avoir', 'aller', 'faire', 'dire', 'venir', 'voir', 'pouvoir', 'parler', 'finir', 'prendre', 'savoir', 'vouloir', 'mettre', 'tenir', 'sortir', 'vivre', 'écrire', 'lire', 'partir', 'boire', 'croire', 'devoir', 'ouvrir', 'recevoir', 'suivre', 'courir'] %}
+          {% for v in ['être', 'avoir', 'aller', 'faire', 'dire', 'venir', 'voir', 'aimer', 'parler', 'finir', 'prendre', 'entrer', 'vouloir', 'mettre', 'tenir', 'sortir', 'vivre', 'écrire', 'lire', 'partir', 'boire', 'croire', 'devoir', 'ouvrir', 'recevoir', 'suivre', 'courir'] %}
             <a href="{{ url_for('conjugaison') }}?verbe={{ v }}"
                style="background-color: #9c3447; color: white; padding: 8px 16px; border-radius: 20px; text-decoration: none; font-size: 15px; transition: background 0.3s;">
               {{ v }}

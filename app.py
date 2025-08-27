@@ -372,7 +372,7 @@ def chatbot():
 
 # Liste (incomplète mais fonctionnelle) de verbes en -ir qui appartiennent au 3e groupe
 verbes_3e_groupe_ir = [
-    "acquérir", "assaillir", "bouillir", "courir", "couvrir",
+    "acquérir", "assaillir", "bouillir", "courir", "savoir", "couvrir",
     "cueillir", "défaillir", "dormir", "endormir", "fuir", 
     "mentir", "mourir", "offrir", "ouvrir", "partir", 
     "recueillir", "ressentir", "revenir", "sentir", 
@@ -396,46 +396,22 @@ def verbe_est_un_verbe_wiktionnaire(verbe):
         if response.status_code != 200:
             return False
         soup = BeautifulSoup(response.text, "html.parser")
-        fr_section = soup.find("span", id="Français")
-        if not fr_section:
+        span_fr = soup.find("span", id="Français")
+        if not span_fr:
             return False
-        current = fr_section.find_parent()
-        while current and current.name != "h2":
-            current = current.find_next_sibling()
+        current = span_fr.find_parent("h2")
         while current:
-            if current.name in ["h3", "h4"] and "Verbe" in current.text:
-                return True
             current = current.find_next_sibling()
+            if current and current.name in ["h3", "h4"]:
+                titre = current.get_text(strip=True).lower()
+                if "verbe" in titre:
+                    return True
+            if current and current.name == "h2":
+                break
         return False
-    except:
-        return False
-
-
-
-
-def get_definition_depuis_wiktionnaire(verbe):
-    try:
-        url = f"https://fr.wiktionary.org/wiki/{verbe}"
-        response = requests.get(url)
-        if response.status_code != 200:
-            return None
-
-        soup = BeautifulSoup(response.text, 'html.parser')
-        section_fr = soup.find('span', id='Français')
-        if not section_fr:
-            return None
-
-        ol = section_fr.find_next('ol')
-        if ol:
-            return ol.find('li').get_text()
-        return None
     except Exception as e:
-        print(f"Erreur de définition : {e}")
-        return None
-
-
-
-
+        print("Erreur Wiktionnaire :", e)
+        return False
 
 @app.route('/conjugaison', methods=['GET', 'POST'])
 def conjugaison():
@@ -443,7 +419,7 @@ def conjugaison():
     conjugaisons = {}
     groupe = "Inconnu"
     pronominal = False
-    definition = ""
+    message = ""
 
     if request.method == 'POST':
         verbe = request.form.get('verbe', '').strip().lower()
@@ -452,7 +428,8 @@ def conjugaison():
 
     if verbe:
         try:
-            resultats = Conjugaison.query.filter_by(verbe=verbe).all()
+            # Recherche dans la base
+            resultats = Conjugaison.query.filter(func.lower(Conjugaison.verbe) == verbe).all()
             if resultats:
                 for conj in resultats:
                     mode_nom = conj.mode.nom
@@ -461,32 +438,46 @@ def conjugaison():
                     conjugaisons[mode_nom][conj.temps] = conj.conjugaisons.split("\n")
                 groupe = resultats[0].groupe
                 pronominal = resultats[0].pronominal
+
             else:
-                # Vérifier si c’est un vrai verbe
-                definition = get_definition_depuis_wiktionnaire(verbe)
-                if not definition:
-                    definition = f"⚠️ Le mot « {verbe} » n’est pas reconnu comme un verbe."
+                # Pronominal
+                if verbe.startswith("se ") or verbe.startswith("s'"):
+                    verbe_clean = verbe.split(" ", 1)[-1].replace("'", "")
+                    pronominal = True
+                else:
+                    verbe_clean = verbe
+                    pronominal = False
+
+                # Vérifie si le mot est un verbe
+                if not verbe_est_un_verbe_wiktionnaire(verbe_clean):
+                    message = f"⚠️ Le verbe « {verbe} » ne semble pas être encore disponible."
                     return render_template("conjugaison.html",
                                            verbe=verbe,
                                            conjugaisons={},
                                            groupe="Inconnu",
                                            pronominal="non",
-                                           definition=definition)
+                                           definition=message)
 
-                # Si c'est un vrai verbe, on le conjugue avec verbecc
+                # Conjugaison avec verbecc
                 conj = Conjugator(lang='fr')
-                result = conj.conjugate(verbe)
+                result = conj.conjugate(verbe_clean)
                 moods = result.get("moods", {})
+                if not moods:
+                    message = f"⚠️ Impossible de conjuguer le verbe « {verbe} »."
+                    return render_template("conjugaison.html",
+                                           verbe=verbe,
+                                           conjugaisons={},
+                                           groupe="Inconnu",
+                                           pronominal="non",
+                                           definition=message)
 
+                # Groupe
                 if verbe.endswith("er") and verbe != "aller":
                     groupe = "1er"
-                elif verbe.endswith("ir") and verbe not in ['courir', 'mourir', 'fuir']:  # à adapter
+                elif verbe.endswith("ir") and verbe not in verbes_3e_groupe_ir:
                     groupe = "2e"
                 else:
                     groupe = "3e"
-
-                if verbe.startswith("se ") or verbe.startswith("s'"):
-                    pronominal = True
 
                 for mode_nom, temps_dict in moods.items():
                     mode = Mode.query.filter_by(nom=mode_nom).first()
@@ -497,7 +488,9 @@ def conjugaison():
 
                     for temps_nom, formes in temps_dict.items():
                         existe = Conjugaison.query.filter_by(
-                            verbe=verbe, temps=temps_nom, mode_id=mode.id
+                            verbe=verbe,
+                            temps=temps_nom,
+                            mode_id=mode.id
                         ).first()
                         if not existe:
                             nouv = Conjugaison(
@@ -509,12 +502,14 @@ def conjugaison():
                                 mode_id=mode.id
                             )
                             db.session.add(nouv)
+
                         if mode_nom not in conjugaisons:
                             conjugaisons[mode_nom] = {}
                         conjugaisons[mode_nom][temps_nom] = formes
+
                 db.session.commit()
 
-                # Historique
+                # Historique utilisateur
                 utilisateur_id = session.get('utilisateur_id')
                 if utilisateur_id:
                     mode_inf = Mode.query.filter_by(nom="Infinitif").first()
@@ -540,14 +535,16 @@ def conjugaison():
 
         except Exception as e:
             print("Erreur globale :", e)
-            definition = "❌ Erreur lors de la récupération de la conjugaison."
+            message = "❌ Une erreur est survenue pendant la conjugaison."
 
     return render_template("conjugaison.html",
                            verbe=verbe,
                            conjugaisons=conjugaisons,
                            groupe=f"{groupe} groupe" if groupe in ["1er", "2e", "3e"] else groupe,
                            pronominal="oui" if pronominal else "non",
-                           definition=definition)
+                           definition=message)
+
+
 
 
 
