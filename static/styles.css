@@ -38,9 +38,11 @@ body {
     margin: 0;
     font-family: 'Roboto', sans-serif;
     background-image: url("/static/images/v882batch2-kul-12.jpg");
-    background-size: 100% auto;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
+    height: 300px;
+    width: 30;
+    /* background-size: 100% auto; */
+    /* background-repeat: no-repeat;
+    background-attachment: fixed; */
     color: #fff;
     text-align: center;
     animation: backgroundZoom 20s ease-in-out infinite;

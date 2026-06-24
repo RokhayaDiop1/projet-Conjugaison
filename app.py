@@ -1,36 +1,21 @@
-from flask import Flask, render_template
-from flask import Flask, render_template, request
-from verbecc import Conjugator
+from flask import Flask, render_template, request, redirect, flash, session, url_for, jsonify, send_file, make_response, render_template_string
 from flask_sqlalchemy import SQLAlchemy
-from models import db, Mode, Conjugaison
+
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask import session, redirect, flash
-from models import db, Utilisateur
-from flask import Flask, render_template, request, redirect, flash, session, url_for
-from models import Historique
-from datetime import datetime
-import csv
-from flask import request
-from models import Cours
-from models import Exercice
-from models import Resultat
-from models import Connexion
-from models import Quiz
 from sqlalchemy import func
-from flask import jsonify
-from flask import send_file, render_template, redirect, url_for, flash, request, session
-from models import db, Cours 
-from flask import make_response
-from flask import render_template_string
+
+# from verbecc.conjugator import Conjugator
+from bs4 import BeautifulSoup
+
+from datetime import datetime, timedelta
+
+from models import db, Mode, Conjugaison, Utilisateur, Historique, Cours, Exercice, Resultat, Connexion, Quiz
+
+import csv
 import io
+import json
 import markdown
 import pdfkit
-from datetime import datetime, timedelta
-import json
-from flask import request, render_template, session
-from datetime import datetime
-from verbecc import Conjugator
-from bs4 import BeautifulSoup
 import requests
 
 
@@ -413,6 +398,10 @@ def verbe_est_un_verbe_wiktionnaire(verbe):
         print("Erreur Wiktionnaire :", e)
         return False
 
+
+
+
+
 @app.route('/conjugaison', methods=['GET', 'POST'])
 def conjugaison():
     verbe = ''
@@ -421,16 +410,18 @@ def conjugaison():
     pronominal = False
     message = ""
 
+    # Récupération du verbe depuis le formulaire ou l'URL
     if request.method == 'POST':
         verbe = request.form.get('verbe', '').strip().lower()
-    elif request.method == 'GET':
+    else:
         verbe = request.args.get('verbe', '').strip().lower()
 
     if verbe:
         try:
-            # Recherche dans la base
+            # 1️⃣ Vérification dans la base
             resultats = Conjugaison.query.filter(func.lower(Conjugaison.verbe) == verbe).all()
             if resultats:
+                # Verbe déjà présent : on prépare les données pour l'affichage
                 for conj in resultats:
                     mode_nom = conj.mode.nom
                     if mode_nom not in conjugaisons:
@@ -440,7 +431,7 @@ def conjugaison():
                 pronominal = resultats[0].pronominal
 
             else:
-                # Pronominal
+                # 2️⃣ Vérification pronominale
                 if verbe.startswith("se ") or verbe.startswith("s'"):
                     verbe_clean = verbe.split(" ", 1)[-1].replace("'", "")
                     pronominal = True
@@ -448,17 +439,8 @@ def conjugaison():
                     verbe_clean = verbe
                     pronominal = False
 
-                # Vérifie si le mot est un verbe
-                if not verbe_est_un_verbe_wiktionnaire(verbe_clean):
-                    message = f"⚠️ Le verbe « {verbe} » ne semble pas être encore disponible."
-                    return render_template("conjugaison.html",
-                                           verbe=verbe,
-                                           conjugaisons={},
-                                           groupe="Inconnu",
-                                           pronominal="non",
-                                           definition=message)
-
-                # Conjugaison avec verbecc
+                # 3️⃣ Conjugaison avec Verbecc
+                # On ignore la vérification Wiktionnaire pour les verbes irréguliers
                 conj = Conjugator(lang='fr')
                 result = conj.conjugate(verbe_clean)
                 moods = result.get("moods", {})
@@ -471,7 +453,7 @@ def conjugaison():
                                            pronominal="non",
                                            definition=message)
 
-                # Groupe
+                # 4️⃣ Détermination du groupe du verbe
                 if verbe.endswith("er") and verbe != "aller":
                     groupe = "1er"
                 elif verbe.endswith("ir") and verbe not in verbes_3e_groupe_ir:
@@ -479,6 +461,7 @@ def conjugaison():
                 else:
                     groupe = "3e"
 
+                # 5️⃣ Ajout des modes et conjugaisons dans la base
                 for mode_nom, temps_dict in moods.items():
                     mode = Mode.query.filter_by(nom=mode_nom).first()
                     if not mode:
@@ -509,7 +492,7 @@ def conjugaison():
 
                 db.session.commit()
 
-                # Historique utilisateur
+                # 6️⃣ Historique utilisateur
                 utilisateur_id = session.get('utilisateur_id')
                 if utilisateur_id:
                     mode_inf = Mode.query.filter_by(nom="Infinitif").first()
@@ -537,13 +520,14 @@ def conjugaison():
             print("Erreur globale :", e)
             message = "❌ Une erreur est survenue pendant la conjugaison."
 
-    return render_template("conjugaison.html",
-                           verbe=verbe,
-                           conjugaisons=conjugaisons,
-                           groupe=f"{groupe} groupe" if groupe in ["1er", "2e", "3e"] else groupe,
-                           pronominal="oui" if pronominal else "non",
-                           definition=message)
-
+    return render_template(
+        "conjugaison.html",
+        verbe=verbe,
+        conjugaisons=conjugaisons,
+        groupe=f"{groupe} groupe" if groupe in ["1er", "2e", "3e"] else groupe,
+        pronominal="oui" if pronominal else "non",
+        definition=message
+    )
 
 
 
