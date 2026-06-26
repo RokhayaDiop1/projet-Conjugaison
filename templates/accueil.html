@@ -25,8 +25,8 @@
         <div class="logo">  
             <img src="/static/images/logo blanc.png" alt="">
         </div>
-        <div>
-          <a href="{{ url_for('accueil') }}"><i class="fa-solid fa-house"></i>Accueil</a>
+        <div class="lien">
+          <a href="{{ url_for('accueil') }}"><i class="fa-solid fa-house"></i> Accueil</a>
   
           {% if session.get('utilisateur_id') %}
               <a href="{{ url_for('deconnexion') }}">Déconnexion</a>
@@ -43,19 +43,27 @@
     </p>
 
     <div class="row">
-  <a href="{{ url_for('apprentissage') }}" class="column apprentissage">
-    <div class="icon-circle">
-      <i class="fas fa-book-open"></i>
-    </div>
-    Apprentissage
-  </a>
+      <a href="{{ url_for('apprentissage') }}" class="column apprentissage">
+        <div class="icon-circle">
+          <i class="fas fa-book-open"></i>
+        </div>
+        Apprentissage
+      </a>
 
-  <a href="{{ url_for('conjugaison') }}" class="column conjugaison">
-    <div class="icon-circle">
-      <i class="fas fa-pen-fancy"></i>
-    </div>
-    Conjugaison
-  </a>
+      <a href="{{ url_for('conjugaison') }}" class="column conjugaison">
+        <div class="icon-circle">
+          <i class="fas fa-pen-fancy"></i>
+        </div>
+        Conjugaison
+      </a>
+
+      <a href="{{ url_for('chatbot') }}" class="column chatbot">
+        <div class="icon-circle">
+          <img src="/static/images/chat-icon.png" alt="Icône Chatbot" width="100">
+        </div>
+        Chatbot
+      </a>
+    </div>  
 
 
 
@@ -76,7 +84,7 @@
         Chaque fiche vous présente sa conjugaison détaillée, à tous les temps.
         Clair, structuré et accessible, cet outil vous permet de maîtriser la conjugaison en un clin d’œil,
         que vous soyez étudiant, enseignant ou simplement curieux.
-      </p>
+        </p>
       </div>
     </div>
 
